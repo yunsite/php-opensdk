@@ -2,7 +2,9 @@
 
 require_once 'Services/JSON.php';
 /**
- * OAuth协议接口
+ * OpenSDK工具类
+ *
+ * 主要做一些通用方法的封装和兼容性工作
  *
  * 依赖：
  * PHP 5 >= 5.1.2, PECL hash >= 1.1 (no need now)
@@ -12,7 +14,7 @@ require_once 'Services/JSON.php';
  *
  */
 
-class OpenSDK_OAuth_Util
+class OpenSDK_Util
 {
 
 	/**
