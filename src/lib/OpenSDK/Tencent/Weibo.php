@@ -69,7 +69,9 @@ class OpenSDK_Tencent_Weibo
 	 * 存储access_token的session key
 	 */
 	const ACCESS_TOKEN = 'tencent_access_token';
-	
+
+	const RETURN_JSON = 'json';
+	const RETURN_XML = 'xml';
 	/**
 	 * 初始化
 	 * @param string $appkey
@@ -183,21 +185,27 @@ class OpenSDK_Tencent_Weibo
 	 * @param string $method 官方说明中的 method GET/POST
 	 * @param false|array $multi 是否上传文件
 	 * @param bool $decode 是否对返回的字符串解码成数组
+	 * @param OpenSDK_Tencent_Weibo::RETURN_JSON|OpenSDK_Tencent_Weibo::RETURN_XML $format 调用格式
 	 */
-	public static function call($command , $params=array() , $method = 'GET' , $multi=false , $decode=true)
+	public static function call($command , $params=array() , $method = 'GET' , $multi=false ,$decode=true , $format=self::RETURN_JSON)
 	{
-		$params['foramt'] = self::RETURN_FORMAT;
+		if($format == self::RETURN_XML)
+			;
+		else
+			$format == self::RETURN_JSON;
+		$params['foramt'] = $format;
 		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
 		$response = self::request( 'http://open.t.qq.com/api/'.$command , $method, $params, $multi);
 		if($decode)
 		{
-			if(self::RETURN_FORMAT == 'json')
+			if($format == self::RETURN_JSON)
 			{
 				return OpenSDK_OAuth_Util::json_decode($response, true);
 			}
 			else
 			{
-				//parse xml
+				//parse xml2array later
+				return $response;
 			}
 		}
 		else
@@ -261,10 +269,5 @@ class OpenSDK_Tencent_Weibo
 	{
 		return time();
 	}
-
-	/**
-	 * 数据返回格式
-	 */
-	const RETURN_FORMAT = 'json';
 
 }
