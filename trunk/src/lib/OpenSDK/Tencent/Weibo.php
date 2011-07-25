@@ -6,10 +6,12 @@ require_once 'OpenSDK/OAuth/Client.php';
  * Tencent 微博 SDK
  *
  * 依赖：
- * 1、PECL json >= 1.2.0
- * 2、PHP >= 5.2.0 because json_decode
+ * 1、PECL json >= 1.2.0	no need now
+ * 2、PHP >= 5.2.0 because json_decode no need now
  * 3、$_SESSION
- * 4、PECL hash >= 1.1
+ * 4、PECL hash >= 1.1 no need now
+ *
+ * only need PHP >= 5.0
  *
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
@@ -191,7 +193,7 @@ class OpenSDK_Tencent_Weibo
 		{
 			if(self::RETURN_FORMAT == 'json')
 			{
-				return json_decode($response, true);
+				return OpenSDK_OAuth_Util::json_decode($response, true);
 			}
 			else
 			{

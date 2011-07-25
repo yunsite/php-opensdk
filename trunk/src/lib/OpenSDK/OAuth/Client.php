@@ -1,5 +1,6 @@
 <?php
 
+require_once 'OpenSDK/OAuth/Util.php';
 /**
  * OAuth协议接口
  *
@@ -89,7 +90,7 @@ class OpenSDK_OAuth_Client
 		$pairs = array();
         foreach($params as $key => $value)
         {
-			$key = self::urlencode_rfc3986($key);
+			$key = OpenSDK_OAuth_Util::urlencode_rfc3986($key);
             if(is_array($value))
             {
                 // If two or more parameters share the same name, they are sorted by their value
@@ -97,25 +98,25 @@ class OpenSDK_OAuth_Client
                 natsort($value);
                 foreach($value as $duplicate_value)
                 {
-					$duplicate_value = self::urlencode_rfc3986($duplicate_value);
+					$duplicate_value = OpenSDK_OAuth_Util::urlencode_rfc3986($duplicate_value);
                     $pairs[] = $key . '=' . $duplicate_value;
                 }
             }
             else
             {
-				$value = self::urlencode_rfc3986($value);
+				$value = OpenSDK_OAuth_Util::urlencode_rfc3986($value);
                 $pairs[] = $key . '=' . $value;
             }
         }
 		
-        $sign_parts = self::urlencode_rfc3986(implode('&', $pairs));
+        $sign_parts = OpenSDK_OAuth_Util::urlencode_rfc3986(implode('&', $pairs));
 		
-		$base_string = implode('&', array( strtoupper($method) , self::urlencode_rfc3986($url) , $sign_parts ));
+		$base_string = implode('&', array( strtoupper($method) , OpenSDK_OAuth_Util::urlencode_rfc3986($url) , $sign_parts ));
 
-        $key_parts = array($this->_app_secret, self::urlencode_rfc3986($this->_token_secret));
+        $key_parts = array($this->_app_secret, OpenSDK_OAuth_Util::urlencode_rfc3986($this->_token_secret));
 
         $key = implode('&', $key_parts);
-        return base64_encode(hash_hmac('sha1', $base_string, $key, true));
+        return base64_encode(OpenSDK_OAuth_Util::hash_hmac('sha1', $base_string, $key, true));
 	}
 
 	/**
@@ -236,28 +237,5 @@ class OpenSDK_OAuth_Client
 			return '';
         }
 	}
-
-	/**
-	 * rfc3986 encode
-	 * why not encode ~ 
-	 *
-	 * @param string|mix $input
-	 * @return string
-	 */
-	public static function urlencode_rfc3986($input)
-    {
-        if(is_array($input))
-        {
-            return array_map( array( __CLASS__ , 'urlencode_rfc3986') , $input);
-        }
-        else if(is_scalar($input))
-		{
-			return str_replace('%7E', '~', rawurlencode($input));
-		}
-		else
-		{
-			return '';
-		}
-    }
 
 }
