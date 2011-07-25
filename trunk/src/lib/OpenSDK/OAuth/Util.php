@@ -5,7 +5,7 @@ require_once 'Services/JSON.php';
  * OAuth协议接口
  *
  * 依赖：
- * PHP 5 >= 5.1.2, PECL hash >= 1.1
+ * PHP 5 >= 5.1.2, PECL hash >= 1.1 (no need now)
  * 
  * @ignore
  * @author icehu@vip.qq.com
@@ -92,7 +92,7 @@ class OpenSDK_OAuth_Util
 	{
 		if(function_exists('hash_hmac'))
 		{
-//			return hash_hmac($algo, $data, $key, $raw_output);
+			return hash_hmac($algo, $data, $key, $raw_output);
 		}
 
 		$algo = strtolower($algo);

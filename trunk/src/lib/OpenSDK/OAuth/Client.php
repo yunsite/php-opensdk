@@ -5,7 +5,7 @@ require_once 'OpenSDK/OAuth/Util.php';
  * OAuth协议接口
  *
  * 依赖：
- * PHP 5 >= 5.1.2, PECL hash >= 1.1
+ * PHP 5 >= 5.1.2, PECL hash >= 1.1 (no need now)
  * 
  * @ignore
  * @author icehu@vip.qq.com
