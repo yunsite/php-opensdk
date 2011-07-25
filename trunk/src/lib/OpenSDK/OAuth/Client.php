@@ -1,6 +1,6 @@
 <?php
 
-require_once 'OpenSDK/OAuth/Util.php';
+require_once 'OpenSDK/Util.php';
 /**
  * OAuth协议接口
  *
@@ -90,7 +90,7 @@ class OpenSDK_OAuth_Client
 		$pairs = array();
         foreach($params as $key => $value)
         {
-			$key = OpenSDK_OAuth_Util::urlencode_rfc3986($key);
+			$key = OpenSDK_Util::urlencode_rfc3986($key);
             if(is_array($value))
             {
                 // If two or more parameters share the same name, they are sorted by their value
@@ -98,25 +98,25 @@ class OpenSDK_OAuth_Client
                 natsort($value);
                 foreach($value as $duplicate_value)
                 {
-					$duplicate_value = OpenSDK_OAuth_Util::urlencode_rfc3986($duplicate_value);
+					$duplicate_value = OpenSDK_Util::urlencode_rfc3986($duplicate_value);
                     $pairs[] = $key . '=' . $duplicate_value;
                 }
             }
             else
             {
-				$value = OpenSDK_OAuth_Util::urlencode_rfc3986($value);
+				$value = OpenSDK_Util::urlencode_rfc3986($value);
                 $pairs[] = $key . '=' . $value;
             }
         }
 		
-        $sign_parts = OpenSDK_OAuth_Util::urlencode_rfc3986(implode('&', $pairs));
+        $sign_parts = OpenSDK_Util::urlencode_rfc3986(implode('&', $pairs));
 		
-		$base_string = implode('&', array( strtoupper($method) , OpenSDK_OAuth_Util::urlencode_rfc3986($url) , $sign_parts ));
+		$base_string = implode('&', array( strtoupper($method) , OpenSDK_Util::urlencode_rfc3986($url) , $sign_parts ));
 
-        $key_parts = array($this->_app_secret, OpenSDK_OAuth_Util::urlencode_rfc3986($this->_token_secret));
+        $key_parts = array($this->_app_secret, OpenSDK_Util::urlencode_rfc3986($this->_token_secret));
 
         $key = implode('&', $key_parts);
-        return base64_encode(OpenSDK_OAuth_Util::hash_hmac('sha1', $base_string, $key, true));
+        return base64_encode(OpenSDK_Util::hash_hmac('sha1', $base_string, $key, true));
 	}
 
 	/**

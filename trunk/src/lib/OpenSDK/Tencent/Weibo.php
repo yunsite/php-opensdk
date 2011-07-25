@@ -200,7 +200,7 @@ class OpenSDK_Tencent_Weibo
 		{
 			if($format == self::RETURN_JSON)
 			{
-				return OpenSDK_OAuth_Util::json_decode($response, true);
+				return OpenSDK_Util::json_decode($response, true);
 			}
 			else
 			{
