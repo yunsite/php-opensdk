@@ -73,7 +73,7 @@ class OpenSDK_OAuth_Client
 	 * @param string $url
 	 * @param array $params
 	 * @param string $method
-	 * @param false|array $multi false:普通post array: array ( array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
+	 * @param false|array $multi false:普通post array: array ( '{fieldname}' =>array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
 	 * @return string
 	 */
 	public function request( $url, $method, $params, $multi = false )
@@ -133,8 +133,8 @@ class OpenSDK_OAuth_Client
 	 *
 	 * @param string $url
 	 * @param array $params
-	 * @param string $method
-	 * @param false|array $multi false:普通post array: array ( array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
+	 * @param string $method 只支持 GET / POST 
+	 * @param false|array $multi false:普通post array: array ( 'fieldname'=>array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
 	 * @return string
 	 */
 	private function http( $url , $params , $method='GET' , $multi=false )

@@ -172,7 +172,7 @@ class OpenSDK_Tencent_Weibo
 	 * $multi 是一个二维数组
 	 *
 	 * array(
-	 *	array(		//第一个文件
+	 *	'{fieldname}' => array(		//第一个文件
 	 *		'type' => 'mine 类型',
 	 *		'name' => 'filename',
 	 *		'data' => 'filedata 字节流',
@@ -234,6 +234,12 @@ class OpenSDK_Tencent_Weibo
 	}
 
 	/**
+	 * OAuth 版本
+	 * @var string
+	 */
+	protected static $version = '1.0';
+
+	/**
 	 *
 	 * OAuth协议请求接口
 	 *
@@ -253,7 +259,7 @@ class OpenSDK_Tencent_Weibo
 		$params['oauth_nonce'] = md5( mt_rand(1, 100000) . microtime(true) );
 		$params['oauth_consumer_key'] = self::$_appkey;
 		$params['oauth_signature_method'] = 'HMAC-SHA1';
-		$params['oauth_version'] = '1.0';
+		$params['oauth_version'] = self::$version;
 		$params['oauth_timestamp'] = self::getTimestamp();
 		return self::getOAuth()->request($url, $method, $params, $multi);
 	}
