@@ -173,7 +173,7 @@ class OpenSDK_Sina_Weibo
 	 * $multi 是一个二维数组
 	 *
 	 * array(
-	 *	array(		//第一个文件
+	 *	'{fieldname}' => array(		//第一个文件
 	 *		'type' => 'mine 类型',
 	 *		'name' => 'filename',
 	 *		'data' => 'filedata 字节流',
@@ -233,6 +233,10 @@ class OpenSDK_Sina_Weibo
 		return self::$oauth;
 	}
 
+	/**
+	 * OAuth 版本
+	 * @var string
+	 */
 	protected static $version = '1.0a';
 
 	/**

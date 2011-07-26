@@ -33,6 +33,21 @@ else if(isset($_SESSION[OpenSDK_Tencent_Weibo::ACCESS_TOKEN]) && isset($_SESSION
 	echo 'oauth_token_secret: ' , $_SESSION[OpenSDK_Tencent_Weibo::OAUTH_TOKEN_SECRET] , '<br />';
 	echo '你的微博帐号信息为:<br /><pre>';
 	var_dump($uinfo);
+	/**
+	 * 上传一张图片并发一条微博
+	 */
+	/*
+	var_dump( OpenSDK_Tencent_Weibo::call('t/add_pic', array(
+		'content' => 'test pic',
+		'clientip' => '123.119.32.253',
+	), 'POST', array(
+		'pic' => array(
+			'type' => 'image/jpg',
+			'name' => '0.jpg',
+			'data' => file_get_contents('0.jpg'),
+		),
+	)) );
+	 */
 	$exit = true;
 }
 else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))

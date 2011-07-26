@@ -33,6 +33,18 @@ else if(isset($_SESSION[OpenSDK_Sina_Weibo::ACCESS_TOKEN]) && isset($_SESSION[Op
 	echo 'oauth_token_secret: ' , $_SESSION[OpenSDK_Sina_Weibo::OAUTH_TOKEN_SECRET] , '<br />';
 	echo '你的微博帐号信息为:<br /><pre>';
 	var_dump($uinfo);
+	/**
+	 * 上传一张图片，并发微博
+	 */
+	/*
+	var_dump( OpenSDK_Sina_Weibo::call('statuses/upload', array(
+		'status' => 'test pic',
+	), 'POST', array('pic'=>array(
+			'type' => 'image/jpg',
+			'name' => '0.jpg',
+			'data' => file_get_contents('0.jpg'),
+	))) );
+	 */
 	$exit = true;
 }
 else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
