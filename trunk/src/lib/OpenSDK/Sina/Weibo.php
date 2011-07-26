@@ -222,8 +222,7 @@ class OpenSDK_Sina_Weibo
 	{
 		if( null === self::$oauth )
 		{
-			self::$oauth = new OpenSDK_OAuth_Client();
-			self::$oauth->setAppSecret(self::$_appsecret);
+			self::$oauth = new OpenSDK_OAuth_Client(self::$_appsecret);
 			self::$oauth->oauth_signature_key = 'oauth_signature';
 			self::$oauth->not_signed = array('pic','image');
 			if(isset($_SESSION[self::OAUTH_TOKEN_SECRET]))
@@ -233,6 +232,8 @@ class OpenSDK_Sina_Weibo
 		}
 		return self::$oauth;
 	}
+
+	protected static $version = '1.0a';
 
 	/**
 	 *
@@ -254,7 +255,7 @@ class OpenSDK_Sina_Weibo
 		$params['oauth_nonce'] = md5( mt_rand(1, 100000) . microtime(true) );
 		$params['oauth_consumer_key'] = self::$_appkey;
 		$params['oauth_signature_method'] = 'HMAC-SHA1';
-		$params['oauth_version'] = '1.0';
+		$params['oauth_version'] = self::$version;
 		$params['oauth_timestamp'] = self::getTimestamp();
 		return self::getOAuth()->request($url, $method, $params, $multi);
 	}
