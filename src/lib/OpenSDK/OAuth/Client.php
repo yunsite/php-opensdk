@@ -39,6 +39,17 @@ class OpenSDK_OAuth_Client
 	private $_token_secret = '';
 
 	/**
+	 * 是否debug
+	 * @var bool
+	 */
+	private $_debug = false;
+
+	public function  __construct( $appsecret='' , $debug=false)
+	{
+		$this->_app_secret = $appsecret;
+		$this->_debug = $debug;
+	}
+	/**
 	 * 设置App secret
 	 * @param string $appsecret
 	 */
@@ -98,14 +109,12 @@ class OpenSDK_OAuth_Client
                 natsort($value);
                 foreach($value as $duplicate_value)
                 {
-					$duplicate_value = OpenSDK_Util::urlencode_rfc3986($duplicate_value);
-                    $pairs[] = $key . '=' . $duplicate_value;
+                    $pairs[] = $key . '=' . OpenSDK_Util::urlencode_rfc3986($duplicate_value);
                 }
             }
             else
             {
-				$value = OpenSDK_Util::urlencode_rfc3986($value);
-                $pairs[] = $key . '=' . $value;
+                $pairs[] = $key . '=' . OpenSDK_Util::urlencode_rfc3986($value);
             }
         }
 		
@@ -113,7 +122,7 @@ class OpenSDK_OAuth_Client
 		
 		$base_string = implode('&', array( strtoupper($method) , OpenSDK_Util::urlencode_rfc3986($url) , $sign_parts ));
 
-        $key_parts = array($this->_app_secret, OpenSDK_Util::urlencode_rfc3986($this->_token_secret));
+        $key_parts = array(OpenSDK_Util::urlencode_rfc3986($this->_app_secret), OpenSDK_Util::urlencode_rfc3986($this->_token_secret));
 
         $key = implode('&', $key_parts);
         return base64_encode(OpenSDK_Util::hash_hmac('sha1', $base_string, $key, true));
@@ -131,6 +140,7 @@ class OpenSDK_OAuth_Client
 	private function http( $url , $params , $method='GET' , $multi=false )
 	{
 		$method = strtoupper($method);
+		$postdata = '';
 		if( !$multi )
 		{
 			$parts = array();
@@ -140,12 +150,11 @@ class OpenSDK_OAuth_Client
 			}
 			if ($parts)
 			{
-				$postdata = strpos($url, '?') ? '&' : '?' . implode('&', $parts);
-				$httpurl = $url . $postdata;
+				$postdata = implode('&', $parts);
+				$httpurl = $url . (strpos($url, '?') ? '&' : '?') . $postdata;
 			}
 			else
 			{
-				$postdata = '';
 				$httpurl = $url;
 			}
 		}
@@ -200,7 +209,7 @@ class OpenSDK_OAuth_Client
 			}
 		}
         $ret = '';
-        $fp = fsockopen($host, $port, $errno, $errstr, 10);
+        $fp = fsockopen($host, $port, $errno, $errstr, 5);
 
         if(! $fp)
         {
@@ -209,17 +218,25 @@ class OpenSDK_OAuth_Client
         }
         else
         {
-            fwrite($fp, implode("\r\n", $headers));
-			fwrite($fp, "\r\n\r\n");
-			if($method != 'GET' && $postdata)
+			if( $method != 'GET' && $postdata )
 			{
-				fwrite($fp, $postdata);
+				$headers[] = 'Content-Length: ' . strlen($postdata);
+			}
+            $this->fwrite($fp, implode("\r\n", $headers));
+			$this->fwrite($fp, "\r\n\r\n");
+			if( $method != 'GET' && $postdata )
+			{
+				$this->fwrite($fp, $postdata);
 			}
 			//skip headers
             while(! feof($fp))
             {
                 $ret .= fgets($fp, 1024);
             }
+			if($this->_debug)
+			{
+				echo $ret;
+			}
 			fclose($fp);
 			$pos = strpos($ret, "\r\n\r\n");
 			if($pos)
@@ -238,4 +255,12 @@ class OpenSDK_OAuth_Client
         }
 	}
 
+	private function fwrite($handle,$data)
+	{
+		fwrite($handle, $data);
+		if($this->_debug)
+		{
+			echo $data;
+		}
+	}
 }
