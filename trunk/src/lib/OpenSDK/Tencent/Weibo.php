@@ -193,7 +193,7 @@ class OpenSDK_Tencent_Weibo
 			;
 		else
 			$format == self::RETURN_JSON;
-		$params['foramt'] = $format;
+		$params['format'] = $format;
 		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
 		$response = self::request( 'http://open.t.qq.com/api/'.$command , $method, $params, $multi);
 		if($decode)
