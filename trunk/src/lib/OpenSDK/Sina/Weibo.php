@@ -194,6 +194,14 @@ class OpenSDK_Sina_Weibo
 			;
 		else
 			$format == self::RETURN_JSON;
+		//去掉空数据
+		foreach($params as $key => $val)
+		{
+			if(strlen($val) == 0)
+			{
+				unset($params[$key]);
+			}
+		}
 		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
 		$response = self::request( 'http://api.t.sina.com.cn/'.$command.'.'.$format , $method, $params, $multi);
 		if($decode)

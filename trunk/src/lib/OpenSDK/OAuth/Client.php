@@ -133,7 +133,7 @@ class OpenSDK_OAuth_Client
 	 *
 	 * @param string $url
 	 * @param array $params
-	 * @param string $method 只支持 GET / POST 
+	 * @param string $method 支持 GET / POST / DELETE
 	 * @param false|array $multi false:普通post array: array ( 'fieldname'=>array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
 	 * @return string
 	 */
@@ -171,6 +171,10 @@ class OpenSDK_OAuth_Client
 		{
 			$headers[] = "GET $httpurl HTTP/$version";
 		}
+		else if($method == 'DELETE')
+		{
+			$headers[] = "DELETE $httpurl HTTP/$version";
+		}
 		else
 		{
 			$headers[] = "POST $url HTTP/$version";
@@ -178,7 +182,7 @@ class OpenSDK_OAuth_Client
 		$headers[] = 'Host: ' . $host;
 		$headers[] = 'Connection: Close';
 
-		if($method != 'GET')
+		if($method == 'POST')
 		{
 			if($multi)
 			{
