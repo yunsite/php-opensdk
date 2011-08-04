@@ -125,7 +125,14 @@ class OpenSDK_OAuth_Client
         $key_parts = array(OpenSDK_Util::urlencode_rfc3986($this->_app_secret), OpenSDK_Util::urlencode_rfc3986($this->_token_secret));
 
         $key = implode('&', $key_parts);
-        return base64_encode(OpenSDK_Util::hash_hmac('sha1', $base_string, $key, true));
+        $sign = base64_encode(OpenSDK_Util::hash_hmac('sha1', $base_string, $key, true));
+		if($this->_debug)
+		{
+			echo 'base_string: ' , $base_string , "\n";
+			echo 'sign key: ', $key , "\n";
+			echo 'sign: ' , $sign , "\n";
+		}
+		return $sign;
 	}
 
 	/**
@@ -141,6 +148,8 @@ class OpenSDK_OAuth_Client
 	{
 		$method = strtoupper($method);
 		$postdata = '';
+		$urls = @parse_url($url);
+		$httpurl = $urls['path'] . ($urls['query'] ? '?' . $urls['query'] : '');
 		if( !$multi )
 		{
 			$parts = array();
@@ -151,14 +160,13 @@ class OpenSDK_OAuth_Client
 			if ($parts)
 			{
 				$postdata = implode('&', $parts);
-				$httpurl = $url . (strpos($url, '?') ? '&' : '?') . $postdata;
+				$httpurl = $httpurl . (strpos($httpurl, '?') ? '&' : '?') . $postdata;
 			}
 			else
 			{
-				$httpurl = $url;
 			}
 		}
-		$urls = @parse_url($url);
+		
 		$host = $urls['host'];
 		$port = $urls['port'] ? $urls['port'] : 80;
 		$version = '1.1';
@@ -180,6 +188,7 @@ class OpenSDK_OAuth_Client
 			$headers[] = "POST $url HTTP/$version";
 		}
 		$headers[] = 'Host: ' . $host;
+		$headers[] = 'User-Agent: OpenSDK-OAuth';
 		$headers[] = 'Connection: Close';
 
 		if($method == 'POST')
