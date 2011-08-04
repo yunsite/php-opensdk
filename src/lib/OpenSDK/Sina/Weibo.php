@@ -16,11 +16,11 @@ require_once 'OpenSDK/OAuth/Client.php';
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
  * 2、include_once 'OpenSDK/Tencent/Weibo.php';
- * 3、OpenSDK_Tencent_Weibo::init($appkey,$appsecret);
- * 4、OpenSDK_Tencent_Weibo::getRequestToken($callback); 获得request token
- * 5、OpenSDK_Tencent_Weibo::getAuthorizeURL($token); 获得跳转授权URL
- * 6、OpenSDK_Tencent_Weibo::getAccessToken($oauth_verifier) 获得access token
- * 7、OpenSDK_Tencent_Weibo::call();调用API接口
+ * 3、OpenSDK_Sina_Weibo::init($appkey,$appsecret);
+ * 4、OpenSDK_Sina_Weibo::getRequestToken($callback); 获得request token
+ * 5、OpenSDK_Sina_Weibo::getAuthorizeURL($token); 获得跳转授权URL
+ * 6、OpenSDK_Sina_Weibo::getAccessToken($oauth_verifier) 获得access token
+ * 7、OpenSDK_Sina_Weibo::call();调用API接口
  *
  * 建议：
  * 1、PHP5.2 以下版本，可以使用Pear库中的 Service_JSON 来兼容json_decode
