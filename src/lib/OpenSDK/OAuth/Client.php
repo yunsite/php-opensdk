@@ -39,6 +39,12 @@ class OpenSDK_OAuth_Client
 	private $_token_secret = '';
 
 	/**
+	 * 上一次请求返回的Httpcode
+	 * @var number
+	 */
+	private $_httpcode = null;
+
+	/**
 	 * 是否debug
 	 * @var bool
 	 */
@@ -255,6 +261,10 @@ class OpenSDK_OAuth_Client
 			if($pos)
 			{
 				$rt = trim(substr($ret , $pos+1));
+				$responseHead = trim(substr($ret, 0 , $pos));
+				$responseHeads = explode("\r\n", $responseHead);
+				$httpcode = explode(' ', $responseHeads[0]);
+				$this->_httpcode = $httpcode[1];
 				if(strpos( substr($ret , 0 , $pos), 'Transfer-Encoding: chunked'))
 				{
 					$response = explode("\r\n", $rt);
@@ -266,6 +276,15 @@ class OpenSDK_OAuth_Client
 			}
 			return '';
         }
+	}
+
+	/**
+	 * 返回上一次请求的httpCode
+	 * @return number 
+	 */
+	public function getHttpCode()
+	{
+		return $this->_httpcode;
 	}
 
 	private function fwrite($handle,$data)
