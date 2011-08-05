@@ -15,12 +15,12 @@ require_once 'OpenSDK/OAuth/Client.php';
  *
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
- * 2、include_once 'OpenSDK/Sina/Weibo.php';
- * 3、OpenSDK_Sina_Weibo::init($appkey,$appsecret);
- * 4、OpenSDK_Sina_Weibo::getRequestToken($callback); 获得request token
- * 5、OpenSDK_Sina_Weibo::getAuthorizeURL($token); 获得跳转授权URL
- * 6、OpenSDK_Sina_Weibo::getAccessToken($oauth_verifier) 获得access token
- * 7、OpenSDK_Sina_Weibo::call();调用API接口
+ * 2、include_once 'OpenSDK/Kaixin/SNS.php';
+ * 3、OpenSDK_Kaixin_SNS::init($appkey,$appsecret);
+ * 4、OpenSDK_Kaixin_SNS::getRequestToken($callback); 获得request token
+ * 5、OpenSDK_Kaixin_SNS::getAuthorizeURL($token); 获得跳转授权URL
+ * 6、OpenSDK_Kaixin_SNS::getAccessToken($oauth_verifier) 获得access token
+ * 7、OpenSDK_Kaixin_SNS::call();调用API接口
  *
  * 建议：
  * 1、PHP5.2 以下版本，可以使用Pear库中的 Service_JSON 来兼容json_decode
@@ -31,7 +31,7 @@ require_once 'OpenSDK/OAuth/Client.php';
  * @author icehu@vip.qq.com
  */
 
-class OpenSDK_Sina_Weibo
+class OpenSDK_Kaixin_SNS
 {
 
 	/**
@@ -51,24 +51,24 @@ class OpenSDK_Sina_Weibo
 	 */
 	private static $oauth = null;
 
-	private static $accessTokenURL = 'http://api.t.sina.com.cn/oauth/access_token';
+	private static $accessTokenURL = 'http://api.kaixin001.com/oauth/access_token';
 
-	private static $authorizeURL = 'http://api.t.sina.com.cn/oauth/authorize';
+	private static $authorizeURL = 'http://api.kaixin001.com/oauth/authorize';
 
-	private static $requestTokenURL = 'http://api.t.sina.com.cn/oauth/request_token';
+	private static $requestTokenURL = 'http://api.kaixin001.com/oauth/request_token';
 
 	/**
 	 * 存储oauth_token的session key
 	 */
-	const OAUTH_TOKEN = 'sina_oauth_token';
+	const OAUTH_TOKEN = 'kx_oauth_token';
 	/**
 	 * 存储oauth_token_secret的session key
 	 */
-	const OAUTH_TOKEN_SECRET = 'sina_oauth_token_secret';
+	const OAUTH_TOKEN_SECRET = 'kx_oauth_token_secret';
 	/**
 	 * 存储access_token的session key
 	 */
-	const ACCESS_TOKEN = 'sina_access_token';
+	const ACCESS_TOKEN = 'kx_access_token';
 
 	const RETURN_JSON = 'json';
 	const RETURN_XML = 'xml';
@@ -136,7 +136,7 @@ class OpenSDK_Sina_Weibo
         {
             $token = $token['oauth_token'];
         }
-		return self::$authorizeURL . '?oauth_token=' . $token;
+		return self::$authorizeURL . '?oauth_token=' . $token ;
 	}
 
 	/**
@@ -156,9 +156,6 @@ class OpenSDK_Sina_Weibo
 			self::getOAuth()->setTokenSecret($rt['oauth_token_secret']);
 			$_SESSION[self::ACCESS_TOKEN] = $rt['oauth_token'];
 			$_SESSION[self::OAUTH_TOKEN_SECRET] = $rt['oauth_token_secret'];
-
-			$_SESSION['screen_name'] = $rt['screen_name'];
-			$_SESSION['user_id'] = $rt['user_id'];
 		}
 		return $rt;
     }
@@ -202,7 +199,7 @@ class OpenSDK_Sina_Weibo
 			}
 		}
 		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
-		$response = self::request( 'http://api.t.sina.com.cn/'.$command.'.'.$format , $method, $params, $multi);
+		$response = self::request( 'http://api.kaixin001.com/'.$command.'.'.$format , $method, $params, $multi);
 		if($decode)
 		{
 			if( $format == self::RETURN_JSON )
@@ -230,7 +227,7 @@ class OpenSDK_Sina_Weibo
 		if( null === self::$oauth )
 		{
 			self::$oauth = new OpenSDK_OAuth_Client(self::$_appsecret);
-			self::$oauth->not_signed = array('pic','image');
+			self::$oauth->not_signed = array( );
 			if(isset($_SESSION[self::OAUTH_TOKEN_SECRET]))
 			{
 				self::$oauth->setTokenSecret($_SESSION[self::OAUTH_TOKEN_SECRET]);
@@ -243,7 +240,7 @@ class OpenSDK_Sina_Weibo
 	 * OAuth 版本
 	 * @var string
 	 */
-	protected static $version = '1.0a';
+	protected static $version = '1.0';
 
 	/**
 	 *

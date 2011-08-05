@@ -12,6 +12,7 @@ svn export --force %SVN_URI%demo demo
 
 copy appkey.php "demo/tencentappkey.php"
 copy appkey.php "demo/sinaappkey.php"
+copy appkey.php "demo/kxappkey.php"
 
 ECHO 文件导出成功...
 
