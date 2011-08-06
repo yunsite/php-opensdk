@@ -15,7 +15,7 @@ require_once 'OpenSDK/OAuth/Client.php';
  *
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
- * 2、include_once 'OpenSDK/Kaixin/SNS.php';
+ * 2、require_once 'OpenSDK/Kaixin/SNS.php';
  * 3、OpenSDK_Kaixin_SNS::init($appkey,$appsecret);
  * 4、OpenSDK_Kaixin_SNS::getRequestToken($callback); 获得request token
  * 5、OpenSDK_Kaixin_SNS::getAuthorizeURL($token); 获得跳转授权URL
@@ -199,7 +199,7 @@ class OpenSDK_Kaixin_SNS
 			}
 		}
 		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
-		$response = self::request( 'http://api.kaixin001.com/'.$command.'.'.$format , $method, $params, $multi);
+		$response = self::request( 'http://api.kaixin001.com/'.ltrim($command,'/').'.'.$format , $method, $params, $multi);
 		if($decode)
 		{
 			if( $format == self::RETURN_JSON )
