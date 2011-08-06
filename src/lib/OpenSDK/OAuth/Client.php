@@ -19,12 +19,6 @@ class OpenSDK_OAuth_Client
 	 * @var string
 	 */
 	public $oauth_signature_key = 'oauth_signature';
-	
-	/**
-	 * 不加入签名的请求字段
-	 * @var array
-	 */
-	public $not_signed = array('pic','image');
 
 	/**
 	 * app secret
@@ -99,10 +93,6 @@ class OpenSDK_OAuth_Client
 	 */
 	private function sign( $url , $method, $params )
 	{
-		foreach( $this->not_signed as $notkey)
-		{
-			unset($params[$notkey]);
-		}
 		uksort($params, 'strcmp');
 		$pairs = array();
         foreach($params as $key => $value)
