@@ -47,18 +47,6 @@ else if(isset($_SESSION[OpenSDK_Sohu_Weibo::ACCESS_TOKEN]) && isset($_SESSION[Op
 //			'name' => '0.jpg',
 //			'data' => file_get_contents('0.jpg'),
 //	))));
-	/**
-	 * 上传一张图片，并发微博
-	 */
-	/*
-	var_dump( OpenSDK_Sina_Weibo::call('statuses/upload', array(
-		'status' => 'test pic',
-	), 'POST', array('pic'=>array(
-			'type' => 'image/jpg',
-			'name' => '0.jpg',
-			'data' => file_get_contents('0.jpg'),
-	))) );
-	 */
 	$exit = true;
 }
 else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
