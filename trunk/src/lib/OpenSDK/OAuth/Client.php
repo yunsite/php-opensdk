@@ -155,7 +155,7 @@ class OpenSDK_OAuth_Client
 		$method = strtoupper($method);
 		$postdata = '';
 		$urls = @parse_url($url);
-		$httpurl = $urls['path'] . ($urls['query'] ? '?' . $urls['query'] : '');
+		$httpurl = $urlpath = $urls['path'] . ($urls['query'] ? '?' . $urls['query'] : '');
 		if( !$multi )
 		{
 			$parts = array();
@@ -191,7 +191,7 @@ class OpenSDK_OAuth_Client
 		}
 		else
 		{
-			$headers[] = "POST $url HTTP/$version";
+			$headers[] = "POST $urlpath HTTP/$version";
 		}
 		$headers[] = 'Host: ' . $host;
 		$headers[] = 'User-Agent: OpenSDK-OAuth';
