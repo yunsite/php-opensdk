@@ -231,7 +231,6 @@ class OpenSDK_Tencent_Weibo
 		if( null === self::$oauth )
 		{
 			self::$oauth = new OpenSDK_OAuth_Client(self::$_appsecret);
-			self::$oauth->not_signed = array('pic','image');
 			if(isset($_SESSION[self::OAUTH_TOKEN_SECRET]))
 			{
 				self::$oauth->setTokenSecret($_SESSION[self::OAUTH_TOKEN_SECRET]);
