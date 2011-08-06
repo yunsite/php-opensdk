@@ -15,7 +15,7 @@ require_once 'OpenSDK/OAuth/Client.php';
  *
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
- * 2、include_once 'OpenSDK/Tencent/Weibo.php';
+ * 2、require_once 'OpenSDK/Sohu/Weibo.php';
  * 3、OpenSDK_Sohu_Weibo::init($appkey,$appsecret);
  * 4、OpenSDK_Sohu_Weibo::getRequestToken($callback); 获得request token
  * 5、OpenSDK_Sohu_Weibo::getAuthorizeURL($token); 获得跳转授权URL
@@ -133,7 +133,7 @@ class OpenSDK_Sohu_Weibo
         {
             $token = $token['oauth_token'];
         }
-		return self::$authorizeURL . '?oauth_token=' . $token . '&oauth_callback=' . $callback;
+		return self::$authorizeURL . '?oauth_token=' . $token . '&oauth_callback=' . urlencode($callback);
 	}
 
 	/**
@@ -197,7 +197,7 @@ class OpenSDK_Sohu_Weibo
 			}
 		}
 		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
-		$response = self::request( 'http://api.t.sohu.com/'.$command.'.'.$format , $method, $params, $multi);
+		$response = self::request( 'http://api.t.sohu.com/'.ltrim($command,'/').'.'.$format , $method, $params, $multi);
 		if($decode)
 		{
 			if( $format == self::RETURN_JSON )

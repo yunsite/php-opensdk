@@ -15,7 +15,7 @@ require_once 'OpenSDK/OAuth/Client.php';
  *
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
- * 2、include_once 'OpenSDK/Tencent/Weibo.php';
+ * 2、require_once 'OpenSDK/Tencent/Weibo.php';
  * 3、OpenSDK_Tencent_Weibo::init($appkey,$appsecret);
  * 4、OpenSDK_Tencent_Weibo::getRequestToken($callback); 获得request token
  * 5、OpenSDK_Tencent_Weibo::getAuthorizeURL($token); 获得跳转授权URL
@@ -203,7 +203,7 @@ class OpenSDK_Tencent_Weibo
 			}
 		}
 		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
-		$response = self::request( 'http://open.t.qq.com/api/'.$command , $method, $params, $multi);
+		$response = self::request( 'http://open.t.qq.com/api/'.ltrim($command,'/') , $method, $params, $multi);
 		if($decode)
 		{
 			if($format == self::RETURN_JSON)
