@@ -1,6 +1,6 @@
 <?php
 
-require_once 'OpenSDK/OAuth/Client.php';
+require_once 'OpenSDK/OAuth/Interface.php';
 
 /**
  * Sina 微博 SDK
@@ -31,19 +31,8 @@ require_once 'OpenSDK/OAuth/Client.php';
  * @author icehu@vip.qq.com
  */
 
-class OpenSDK_Sina_Weibo
+class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
 {
-
-	/**
-	 * app key
-	 * @var string
-	 */
-	private static $_appkey = '';
-	/**
-	 * app secret
-	 * @var string
-	 */
-	private static $_appsecret = '';
 
 	/**
 	 * OAuth 对象
@@ -58,6 +47,12 @@ class OpenSDK_Sina_Weibo
 	private static $requestTokenURL = 'http://api.t.sina.com.cn/oauth/request_token';
 
 	/**
+	 * OAuth 版本
+	 * @var string
+	 */
+	protected static $version = '1.0a';
+	
+	/**
 	 * 存储oauth_token的session key
 	 */
 	const OAUTH_TOKEN = 'sina_oauth_token';
@@ -70,27 +65,6 @@ class OpenSDK_Sina_Weibo
 	 */
 	const ACCESS_TOKEN = 'sina_access_token';
 
-	const RETURN_JSON = 'json';
-	const RETURN_XML = 'xml';
-	/**
-	 * 初始化
-	 * @param string $appkey
-	 * @param string $appsecret
-	 */
-	public static function init($appkey,$appsecret)
-	{
-		self::setAppkey($appkey, $appsecret);
-	}
-	/**
-	 * 设置APP Key 和 APP Secret
-	 * @param string $appkey
-	 * @param string $appsecret
-	 */
-	private static function setAppkey($appkey,$appsecret)
-	{
-		self::$_appkey = $appkey;
-		self::$_appsecret = $appsecret;
-	}
 
 	/**
 	 * 获取requestToken
@@ -113,8 +87,8 @@ class OpenSDK_Sina_Weibo
 		if($rt['oauth_token'] && $rt['oauth_token_secret'])
 		{
 			self::getOAuth()->setTokenSecret($rt['oauth_token_secret']);
-			$_SESSION[self::OAUTH_TOKEN] = $rt['oauth_token'];
-			$_SESSION[self::OAUTH_TOKEN_SECRET] = $rt['oauth_token_secret'];
+			self::setParam(self::OAUTH_TOKEN, $rt['oauth_token']);
+			self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
 			return $rt;
 		}
 		else
@@ -140,6 +114,15 @@ class OpenSDK_Sina_Weibo
 	}
 
 	/**
+	 * 存储sina screen_name的session key
+	 */
+	const OAUTH_SCREEN_NAME = 'sina_screen_name';
+	/**
+	 * 存储sina user_id的session key
+	 */
+	const OAUTH_USER_ID = 'sina_user_id';
+	
+	/**
 	 * 获得Access Token
 	 * @param string $oauth_verifier
 	 * @return array
@@ -147,18 +130,17 @@ class OpenSDK_Sina_Weibo
 	public static function getAccessToken( $oauth_verifier = false )
     {
 		$response = self::request( self::$accessTokenURL, 'GET' , array(
-			'oauth_token' => $_SESSION[self::OAUTH_TOKEN],
+			'oauth_token' => self::getParam(self::OAUTH_TOKEN),
 			'oauth_verifier' => $oauth_verifier,
 		));
 		parse_str($response,$rt);
 		if( $rt['oauth_token'] && $rt['oauth_token_secret'] )
 		{
 			self::getOAuth()->setTokenSecret($rt['oauth_token_secret']);
-			$_SESSION[self::ACCESS_TOKEN] = $rt['oauth_token'];
-			$_SESSION[self::OAUTH_TOKEN_SECRET] = $rt['oauth_token_secret'];
-
-			$_SESSION['screen_name'] = $rt['screen_name'];
-			$_SESSION['user_id'] = $rt['user_id'];
+			self::setParam(self::ACCESS_TOKEN, $rt['oauth_token']);
+			self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
+			self::setParam(self::OAUTH_SCREEN_NAME, $rt['screen_name']);
+			self::setParam(self::OAUTH_USER_ID, $rt['user_id']);
 		}
 		return $rt;
     }
@@ -180,7 +162,7 @@ class OpenSDK_Sina_Weibo
 	 *	...如果接受多个文件，可以再加
 	 * )
 	 *
-	 * @param string $command 官方说明中去掉 http://open.t.qq.com/api/ 后面剩余的部分
+	 * @param string $command 官方说明中去掉 http://api.t.sina.com.cn/ 后面剩余的部分
 	 * @param array $params 官方说明中接受的参数列表，一个关联数组
 	 * @param string $method 官方说明中的 method GET/POST
 	 * @param false|array $multi 是否上传文件
@@ -201,7 +183,7 @@ class OpenSDK_Sina_Weibo
 				unset($params[$key]);
 			}
 		}
-		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
+		$params['oauth_token'] = self::getParam(self::ACCESS_TOKEN);
 		$response = self::request( 'http://api.t.sina.com.cn/'.ltrim($command,'/').'.'.$format , $method, $params, $multi);
 		if($decode)
 		{
@@ -225,24 +207,19 @@ class OpenSDK_Sina_Weibo
 	 * 获得OAuth 对象
 	 * @return OpenSDK_OAuth_Client
 	 */
-	public static function getOAuth()
+	protected static function getOAuth()
 	{
 		if( null === self::$oauth )
 		{
 			self::$oauth = new OpenSDK_OAuth_Client(self::$_appsecret);
-			if(isset($_SESSION[self::OAUTH_TOKEN_SECRET]))
+			$secret = self::getParam(self::OAUTH_TOKEN_SECRET);
+			if($secret)
 			{
-				self::$oauth->setTokenSecret($_SESSION[self::OAUTH_TOKEN_SECRET]);
+				self::$oauth->setTokenSecret($secret);
 			}
 		}
 		return self::$oauth;
 	}
-
-	/**
-	 * OAuth 版本
-	 * @var string
-	 */
-	protected static $version = '1.0a';
 
 	/**
 	 *
@@ -255,7 +232,7 @@ class OpenSDK_Sina_Weibo
 	 * @return string
 	 * @ignore
 	 */
-	public static function request($url , $method , $params , $multi=false)
+	protected static function request($url , $method , $params , $multi=false)
 	{
 		if(!self::$_appkey || !self::$_appsecret)
 		{
@@ -267,17 +244,6 @@ class OpenSDK_Sina_Weibo
 		$params['oauth_version'] = self::$version;
 		$params['oauth_timestamp'] = self::getTimestamp();
 		return self::getOAuth()->request($url, $method, $params, $multi);
-	}
-
-	/**
-	 * 获得本机时间戳的方法
-	 * 如果服务器时钟存在误差，在这里调整
-	 * 
-	 * @return number
-	 */
-	public static function getTimestamp()
-	{
-		return time();
 	}
 
 }
