@@ -1,6 +1,6 @@
 <?php
 
-require_once 'OpenSDK/OAuth/Client.php';
+require_once 'OpenSDK/OAuth/Interface.php';
 
 /**
  * Tencent 微博 SDK
@@ -31,25 +31,8 @@ require_once 'OpenSDK/OAuth/Client.php';
  * @author icehu@vip.qq.com
  */
 
-class OpenSDK_Tencent_Weibo
+class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
 {
-
-	/**
-	 * app key
-	 * @var string
-	 */
-	private static $_appkey = '';
-	/**
-	 * app secret
-	 * @var string
-	 */
-	private static $_appsecret = '';
-
-	/**
-	 * OAuth 对象
-	 * @var OpenSDK_OAuth_Client
-	 */
-	private static $oauth = null;
 
 	private static $accessTokenURL = 'http://open.t.qq.com/cgi-bin/access_token';
 
@@ -57,6 +40,16 @@ class OpenSDK_Tencent_Weibo
 
 	private static $requestTokenURL = 'http://open.t.qq.com/cgi-bin/request_token';
 
+	/**
+	 * OAuth 对象
+	 * @var OpenSDK_OAuth_Client
+	 */
+	protected static $oauth = null;
+	/**
+	 * OAuth 版本
+	 * @var string
+	 */
+	protected static $version = '1.0';
 	/**
 	 * 存储oauth_token的session key
 	 */
@@ -70,27 +63,10 @@ class OpenSDK_Tencent_Weibo
 	 */
 	const ACCESS_TOKEN = 'tencent_access_token';
 
-	const RETURN_JSON = 'json';
-	const RETURN_XML = 'xml';
 	/**
-	 * 初始化
-	 * @param string $appkey
-	 * @param string $appsecret
+	 * 存储oauth_name的Session key
 	 */
-	public static function init($appkey,$appsecret)
-	{
-		self::setAppkey($appkey, $appsecret);
-	}
-	/**
-	 * 设置APP Key 和 APP Secret
-	 * @param string $appkey
-	 * @param string $appsecret
-	 */
-	private static function setAppkey($appkey,$appsecret)
-	{
-		self::$_appkey = $appkey;
-		self::$_appsecret = $appsecret;
-	}
+	const OAUTH_NAME = 'tencent_oauth_name';
 
 	/**
 	 * 获取requestToken
@@ -113,8 +89,8 @@ class OpenSDK_Tencent_Weibo
 		if($rt['oauth_token'] && $rt['oauth_token_secret'])
 		{
 			self::getOAuth()->setTokenSecret($rt['oauth_token_secret']);
-			$_SESSION[self::OAUTH_TOKEN] = $rt['oauth_token'];
-			$_SESSION[self::OAUTH_TOKEN_SECRET] = $rt['oauth_token_secret'];
+			self::setParam(self::OAUTH_TOKEN, $rt['oauth_token']);
+			self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
 			return $rt;
 		}
 		else
@@ -148,17 +124,16 @@ class OpenSDK_Tencent_Weibo
 	public static function getAccessToken( $oauth_verifier = false )
     {
 		$response = self::request( self::$accessTokenURL, 'GET' , array(
-			'oauth_token' => $_SESSION[self::OAUTH_TOKEN],
+			'oauth_token' => self::getParam(self::OAUTH_TOKEN),
 			'oauth_verifier' => $oauth_verifier,
 		));
 		parse_str($response,$rt);
 		if( $rt['oauth_token'] && $rt['oauth_token_secret'] )
 		{
 			self::getOAuth()->setTokenSecret($rt['oauth_token_secret']);
-			$_SESSION[self::ACCESS_TOKEN] = $rt['oauth_token'];
-			$_SESSION[self::OAUTH_TOKEN_SECRET] = $rt['oauth_token_secret'];
-
-			$_SESSION['oauth_name'] = $rt['name'];
+			self::setParam(self::ACCESS_TOKEN, $rt['oauth_token']);
+			self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
+			self::setParam(self::OAUTH_NAME, $rt['name']);
 		}
 		return $rt;
     }
@@ -202,7 +177,7 @@ class OpenSDK_Tencent_Weibo
 				unset($params[$key]);
 			}
 		}
-		$params['oauth_token'] = $_SESSION[self::ACCESS_TOKEN];
+		$params['oauth_token'] = self::getParam(self::ACCESS_TOKEN);
 		$response = self::request( 'http://open.t.qq.com/api/'.ltrim($command,'/') , $method, $params, $multi);
 		if($decode)
 		{
@@ -226,24 +201,19 @@ class OpenSDK_Tencent_Weibo
 	 * 获得OAuth 对象
 	 * @return OpenSDK_OAuth_Client
 	 */
-	public static function getOAuth()
+	protected static function getOAuth()
 	{
 		if( null === self::$oauth )
 		{
 			self::$oauth = new OpenSDK_OAuth_Client(self::$_appsecret);
-			if(isset($_SESSION[self::OAUTH_TOKEN_SECRET]))
+			$secret = self::getParam(self::OAUTH_TOKEN_SECRET);
+			if($secret)
 			{
-				self::$oauth->setTokenSecret($_SESSION[self::OAUTH_TOKEN_SECRET]);
+				self::$oauth->setTokenSecret($secret);
 			}
 		}
 		return self::$oauth;
 	}
-
-	/**
-	 * OAuth 版本
-	 * @var string
-	 */
-	protected static $version = '1.0';
 
 	/**
 	 *
@@ -256,7 +226,7 @@ class OpenSDK_Tencent_Weibo
 	 * @return string
 	 * @ignore
 	 */
-	public static function request($url , $method , $params , $multi=false)
+	protected static function request($url , $method , $params , $multi=false)
 	{
 		if(!self::$_appkey || !self::$_appsecret)
 		{
@@ -269,16 +239,4 @@ class OpenSDK_Tencent_Weibo
 		$params['oauth_timestamp'] = self::getTimestamp();
 		return self::getOAuth()->request($url, $method, $params, $multi);
 	}
-
-	/**
-	 * 获得本机时间戳的方法
-	 * 如果服务器时钟存在误差，在这里调整
-	 * 
-	 * @return number
-	 */
-	public static function getTimestamp()
-	{
-		return time();
-	}
-
 }
