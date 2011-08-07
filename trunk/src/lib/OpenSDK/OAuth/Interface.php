@@ -5,7 +5,7 @@ require_once 'OpenSDK/OAuth/Client.php';
 /**
  * OAuth1.0 SDK Interface
  *
- * 一些公共的方法
+ * 提供给具体接口子类使用的一些公共方法
  *
  * @author icehu@vip.qq.com
  */
