@@ -1,26 +1,27 @@
 <?php
 
 require_once 'OpenSDK/OAuth/Interface.php';
+require_once 'OpenSDK/OAuth/QQSNSClient.php';
 
 /**
- * Sina 微博 SDK
+ * Tencent OpenSNS SDK
  *
  * 依赖：
- * 1、PECL json >= 1.2.0	(no need now)
- * 2、PHP >= 5.2.0 because json_decode (no need now)
+ * 1、PECL json >= 1.2.0	no need now
+ * 2、PHP >= 5.2.0 because json_decode no need now
  * 3、$_SESSION
- * 4、PECL hash >= 1.1 (no need now)
+ * 4、PECL hash >= 1.1 no need now
  *
  * only need PHP >= 5.0
  *
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
- * 2、require_once 'OpenSDK/Sina/Weibo.php';
- * 3、OpenSDK_Sina_Weibo::init($appkey,$appsecret);
- * 4、OpenSDK_Sina_Weibo::getRequestToken($callback); 获得request token
- * 5、OpenSDK_Sina_Weibo::getAuthorizeURL($token); 获得跳转授权URL
- * 6、OpenSDK_Sina_Weibo::getAccessToken($oauth_verifier) 获得access token
- * 7、OpenSDK_Sina_Weibo::call();调用API接口
+ * 2、require_once 'OpenSDK/Tencent/SNS.php';
+ * 3、OpenSDK_Tencent_SNS::init($appkey,$appsecret);
+ * 4、OpenSDK_Tencent_SNS::getRequestToken(); 获得request token
+ * 5、OpenSDK_Tencent_SNS::getAuthorizeURL($token,$callback); 获得跳转授权URL
+ * 6、OpenSDK_Tencent_SNS::getAccessToken($oauth_verifier) 获得access token
+ * 7、OpenSDK_Tencent_SNS::call();调用API接口
  *
  * 建议：
  * 1、PHP5.2 以下版本，可以使用Pear库中的 Service_JSON 来兼容json_decode
@@ -31,40 +32,42 @@ require_once 'OpenSDK/OAuth/Interface.php';
  * @author icehu@vip.qq.com
  */
 
-class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
+class OpenSDK_Tencent_SNS extends OpenSDK_OAuth_Interface
 {
+
+	private static $accessTokenURL = 'http://openapi.qzone.qq.com/oauth/qzoneoauth_access_token';
+
+	private static $authorizeURL = 'http://openapi.qzone.qq.com/oauth/qzoneoauth_authorize';
+
+	private static $requestTokenURL = 'http://openapi.qzone.qq.com/oauth/qzoneoauth_request_token';
 
 	/**
 	 * OAuth 对象
 	 * @var OpenSDK_OAuth_Client
 	 */
-	private static $oauth = null;
-
-	private static $accessTokenURL = 'http://api.t.sina.com.cn/oauth/access_token';
-
-	private static $authorizeURL = 'http://api.t.sina.com.cn/oauth/authorize';
-
-	private static $requestTokenURL = 'http://api.t.sina.com.cn/oauth/request_token';
-
+	protected static $oauth = null;
 	/**
 	 * OAuth 版本
 	 * @var string
 	 */
-	protected static $version = '1.0a';
-	
+	protected static $version = '1.0';
 	/**
 	 * 存储oauth_token的session key
 	 */
-	const OAUTH_TOKEN = 'sina_oauth_token';
+	const OAUTH_TOKEN = 'tensns_oauth_token';
 	/**
 	 * 存储oauth_token_secret的session key
 	 */
-	const OAUTH_TOKEN_SECRET = 'sina_oauth_token_secret';
+	const OAUTH_TOKEN_SECRET = 'tensns_oauth_token_secret';
 	/**
 	 * 存储access_token的session key
 	 */
-	const ACCESS_TOKEN = 'sina_access_token';
+	const ACCESS_TOKEN = 'tensns_access_token';
 
+	/**
+	 * 存储oauth_openid的Session key
+	 */
+	const OAUTH_OPENID = 'tensns_oauth_openid';
 
 	/**
 	 * 获取requestToken
@@ -74,15 +77,12 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
      * oauth_token_secret：返回的request_secret
 	 * oauth_callback_confirmed：回调确认
 	 * 
-	 * @param string $callback 回调地址
 	 * @return array
 	 */
-	public static function getRequestToken($callback='null')
+	public static function getRequestToken()
 	{
 		self::getOAuth()->setTokenSecret('');
-		$response = self::request( self::$requestTokenURL, 'GET' , array(
-			'oauth_callback' => $callback,
-		));
+		$response = self::request( self::$requestTokenURL, 'GET' , array() );
 		parse_str($response , $rt);
 		if($rt['oauth_token'] && $rt['oauth_token_secret'])
 		{
@@ -102,26 +102,18 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
 	 * 获得授权URL
 	 *
 	 * @param string|array $token
+	 * @param bool $callback 回调地址
 	 * @return string
 	 */
-	public static function getAuthorizeURL($token)
+	public static function getAuthorizeURL($token , $callback)
 	{
 		if(is_array($token))
         {
             $token = $token['oauth_token'];
         }
-		return self::$authorizeURL . '?oauth_token=' . $token;
+		return self::$authorizeURL . '?oauth_token=' . $token . '&oauth_consumer_key=' . self::$_appkey . '&oauth_callback=' . rawurlencode($callback);
 	}
 
-	/**
-	 * 存储sina screen_name的session key
-	 */
-	const OAUTH_SCREEN_NAME = 'sina_screen_name';
-	/**
-	 * 存储sina user_id的session key
-	 */
-	const OAUTH_USER_ID = 'sina_user_id';
-	
 	/**
 	 * 获得Access Token
 	 * @param string $oauth_verifier
@@ -131,7 +123,8 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
     {
 		$response = self::request( self::$accessTokenURL, 'GET' , array(
 			'oauth_token' => self::getParam(self::OAUTH_TOKEN),
-			'oauth_verifier' => $oauth_verifier,
+			//囧 不合规范的参数 oauth_vericode OAuth的标准参数是 oauth_verifier
+			'oauth_vericode' => $oauth_verifier,
 		));
 		parse_str($response,$rt);
 		if( $rt['oauth_token'] && $rt['oauth_token_secret'] )
@@ -139,8 +132,7 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
 			self::getOAuth()->setTokenSecret($rt['oauth_token_secret']);
 			self::setParam(self::ACCESS_TOKEN, $rt['oauth_token']);
 			self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
-			self::setParam(self::OAUTH_SCREEN_NAME, $rt['screen_name']);
-			self::setParam(self::OAUTH_USER_ID, $rt['user_id']);
+			self::setParam(self::OAUTH_OPENID, $rt['openid']);
 		}
 		return $rt;
     }
@@ -162,19 +154,20 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
 	 *	...如果接受多个文件，可以再加
 	 * )
 	 *
-	 * @param string $command 官方说明中去掉 http://api.t.sina.com.cn/ 后面剩余的部分
+	 * @param string $command 官方说明中去掉 http://openapi.qzone.qq.com/ 后面剩余的部分
 	 * @param array $params 官方说明中接受的参数列表，一个关联数组
 	 * @param string $method 官方说明中的 method GET/POST
 	 * @param false|array $multi 是否上传文件
 	 * @param bool $decode 是否对返回的字符串解码成数组
-	 * @param OpenSDK_Sina_Weibo::RETURN_JSON|OpenSDK_Sina_Weibo::RETURN_XML $format 调用格式
+	 * @param OpenSDK_Tencent_Weibo::RETURN_JSON|OpenSDK_Tencent_Weibo::RETURN_XML $format 调用格式
 	 */
-	public static function call($command , $params=array() , $method = 'GET' , $multi=false , $decode=true , $format='json')
+	public static function call($command , $params=array() , $method = 'GET' , $multi=false ,$decode=true , $format=self::RETURN_JSON)
 	{
 		if($format == self::RETURN_XML)
 			;
 		else
 			$format == self::RETURN_JSON;
+		$params['format'] = $format;
 		//去掉空数据
 		foreach($params as $key => $val)
 		{
@@ -184,10 +177,10 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
 			}
 		}
 		$params['oauth_token'] = self::getParam(self::ACCESS_TOKEN);
-		$response = self::request( 'http://api.t.sina.com.cn/'.ltrim($command,'/').'.'.$format , $method, $params, $multi);
+		$response = self::request( 'http://openapi.qzone.qq.com/'.ltrim($command,'/') , $method, $params, $multi);
 		if($decode)
 		{
-			if( $format == self::RETURN_JSON )
+			if($format == self::RETURN_JSON)
 			{
 				return OpenSDK_Util::json_decode($response, true);
 			}
@@ -212,7 +205,7 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
 	{
 		if( null === self::$oauth )
 		{
-			self::$oauth = new OpenSDK_OAuth_Client(self::$_appsecret);
+			self::$oauth = new OpenSDK_OAuth_QQSNSClient(self::$_appsecret);
 			$secret = self::getParam(self::OAUTH_TOKEN_SECRET);
 			if($secret)
 			{
@@ -239,12 +232,17 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
 		{
 			exit('app key or app secret not init');
 		}
-		$params['oauth_nonce'] = md5( mt_rand(1, 100000) . microtime(true) );
+		//囧 oauth_nonce必须是数字
+		$params['oauth_nonce'] = mt_rand();
 		$params['oauth_consumer_key'] = self::$_appkey;
 		$params['oauth_signature_method'] = 'HMAC-SHA1';
 		$params['oauth_version'] = self::$version;
 		$params['oauth_timestamp'] = self::getTimestamp();
+		//openid
+		if($openid = self::getParam(self::OAUTH_OPENID))
+		{
+			$params['openid'] = $openid;
+		}
 		return self::getOAuth()->request($url, $method, $params, $multi);
 	}
-
 }
