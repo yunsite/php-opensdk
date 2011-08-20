@@ -180,7 +180,8 @@ class OpenSDK_Sohu_Weibo extends OpenSDK_OAuth_Interface
 			}
 			else
 			{
-				//parse xml2array later
+				//todo parse xml2array later
+				//其实没必要。用json即可
 				return $response;
 			}
 		}

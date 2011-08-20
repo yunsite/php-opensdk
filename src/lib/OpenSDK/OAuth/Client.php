@@ -24,25 +24,25 @@ class OpenSDK_OAuth_Client
 	 * app secret
 	 * @var string
 	 */
-	private $_app_secret = '';
+	protected $_app_secret = '';
 
 	/**
 	 * token secret
 	 * @var string
 	 */
-	private $_token_secret = '';
+	protected $_token_secret = '';
 
 	/**
 	 * 上一次请求返回的Httpcode
 	 * @var number
 	 */
-	private $_httpcode = null;
+	protected $_httpcode = null;
 
 	/**
 	 * 是否debug
 	 * @var bool
 	 */
-	private $_debug = false;
+	protected $_debug = false;
 
 	public function  __construct( $appsecret='' , $debug=false)
 	{
@@ -91,7 +91,7 @@ class OpenSDK_OAuth_Client
 	 * @param array $params
 	 * @return string
 	 */
-	private function sign( $url , $method, $params )
+	protected function sign( $url , $method, $params )
 	{
 		uksort($params, 'strcmp');
 		$pairs = array();
@@ -140,7 +140,7 @@ class OpenSDK_OAuth_Client
 	 * @param false|array $multi false:普通post array: array ( 'fieldname'=>array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
 	 * @return string
 	 */
-	private function http( $url , $params , $method='GET' , $multi=false )
+	protected function http( $url , $params , $method='GET' , $multi=false )
 	{
 		$method = strtoupper($method);
 		$postdata = '';
@@ -277,7 +277,7 @@ class OpenSDK_OAuth_Client
 		return $this->_httpcode;
 	}
 
-	private function fwrite($handle,$data)
+	protected function fwrite($handle,$data)
 	{
 		fwrite($handle, $data);
 		if($this->_debug)
