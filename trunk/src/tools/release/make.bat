@@ -9,7 +9,7 @@ ECHO 正在从 %SVN_URI% 导出最新版本文件
 
 svn export --force %SVN_URI%lib lib
 svn export --force %SVN_URI%demo demo
-svn export --force %SVN_URI%readme.txt readme.txt
+svn export --force %SVN_URI%tools/readme.txt readme.txt
 
 copy appkey.php "demo/tencentappkey.php"
 copy appkey.php "demo/sinaappkey.php"
