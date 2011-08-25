@@ -153,7 +153,7 @@ class OpenSDK_Kaixin_SNS extends OpenSDK_OAuth_Interface
 	 * @param string $command 官方说明中去掉 http://api.kaixin001.com/ 后面剩余的部分
 	 * @param array $params 官方说明中接受的参数列表，一个关联数组
 	 * @param string $method 官方说明中的 method GET/POST
-	 * @param false|array $multi 是否上传文件
+	 * @param false|array $multi 是否上传文件 false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
 	 * @param bool $decode 是否对返回的字符串解码成数组
 	 * @param OpenSDK_Sina_Weibo::RETURN_JSON|OpenSDK_Sina_Weibo::RETURN_XML $format 调用格式
 	 */

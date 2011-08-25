@@ -45,9 +45,9 @@ class OpenSDK_OAuth_QQSNSClient extends OpenSDK_OAuth_Client
 			//上传图片专用签名
 			//囧 图片内容需要做签名，并且图片上传时 。
 			//囧 整个sign_parts不做urlencode 。
-			foreach($multi as $field => $data)
+			foreach($multi as $field => $path)
 			{
-				$params[$field] = $data['data'];
+				$params[$field] = file_get_contents($path);
 			}
 			uksort($params, 'strcmp');
 			$pairs = array();

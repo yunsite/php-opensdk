@@ -133,11 +133,11 @@ class OpenSDK_OAuth_Client
 
 	/**
 	 * Http请求接口
-	 *
+	 * 
 	 * @param string $url
 	 * @param array $params
 	 * @param string $method 支持 GET / POST / DELETE
-	 * @param false|array $multi false:普通post array: array ( 'fieldname'=>array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
+	 * @param false|array $multi false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
 	 * @return string
 	 */
 	protected function http( $url , $params , $method='GET' , $multi=false )
@@ -202,12 +202,12 @@ class OpenSDK_OAuth_Client
 					$multipartbody .= 'Content-Disposition: form-data; name="' . $key . "\"\r\n\r\n";
 					$multipartbody .= $val . "\r\n";
 				}
-				foreach($multi as $key => $data)
+				foreach($multi as $key => $path)
 				{
 					$multipartbody .= $MPboundary . "\r\n";
-					$multipartbody .= 'Content-Disposition: form-data; name="' . $key . '"; filename="' . $data['name'] . '"' . "\r\n";
-					$multipartbody .= 'Content-Type: ' . $data['type'] . "\r\n\r\n";
-					$multipartbody .= $data['data'] . "\r\n";
+					$multipartbody .= 'Content-Disposition: form-data; name="' . $key . '"; filename="' . pathinfo($path, PATHINFO_BASENAME) . '"' . "\r\n";
+					$multipartbody .= 'Content-Type: ' . self::get_image_mime($path) . "\r\n\r\n";
+					$multipartbody .= file_get_contents($path) . "\r\n";
 				}
 				$multipartbody .= $endMPboundary . "\r\n";
 				$postdata = $multipartbody;
@@ -267,6 +267,26 @@ class OpenSDK_OAuth_Client
 			return '';
         }
 	}
+
+	public static function get_image_mime( $file )
+    {
+    	$ext = strtolower(pathinfo( $file , PATHINFO_EXTENSION ));
+    	switch( $ext )
+    	{
+    		case 'jpg':
+    		case 'jpeg':
+    			$mime = 'image/jpg';
+    			break;
+    		case 'png';
+    			$mime = 'image/png';
+    			break;
+    		case 'gif';
+    		default:
+    			$mime = 'image/gif';
+    			break;
+    	}
+    	return $mime;
+    }
 
 	/**
 	 * 返回上一次请求的httpCode
