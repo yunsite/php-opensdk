@@ -35,18 +35,16 @@ else if(isset($_SESSION[OpenSDK_Sohu_Weibo::ACCESS_TOKEN]) && isset($_SESSION[Op
 	var_dump($uinfo);
 //	OpenSDK_Sohu_Weibo::call('statuses/update', array('status'=>'一条来自OpenSDK的微博'), 'POST');
 //	发带图微博
-//	var_dump(OpenSDK_Sohu_Weibo::call('statuses/update', array('status'=>'一条来自OpenSDK的带图片微博'), 'POST' ,array('pic'=>array(
-//			'type' => 'image/jpg',
-//			'name' => '0.jpg',
-//			'data' => file_get_contents('0.jpg'),
-//	))));
+	var_dump(OpenSDK_Sohu_Weibo::call('statuses/update', array('status'=>'一条来自OpenSDK的带图片微博'), 'POST' ,
+			array(
+				'pic'=>dirname(__FILE__) . '/0.jpg',
+		)));
 //	更新头像
-//	var_dump(
-//		OpenSDK_Sohu_Weibo::call('account/update_profile_image', array(), 'POST', array('image'=>array(
-//			'type' => 'image/jpg',
-//			'name' => '0.jpg',
-//			'data' => file_get_contents('0.jpg'),
-//	))));
+	var_dump(
+		OpenSDK_Sohu_Weibo::call('account/update_profile_image', array(), 'POST',
+				array(
+			'image'=>dirname(__FILE__) . '/0.jpg',
+			)));
 	$exit = true;
 }
 else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))

@@ -27,24 +27,23 @@ if(isset($_GET['exit']))
 else if(isset($_SESSION[OpenSDK_Sina_Weibo::ACCESS_TOKEN]) && isset($_SESSION[OpenSDK_Sina_Weibo::OAUTH_TOKEN_SECRET]))
 {
 	//已经取得授权
-	$uinfo = OpenSDK_Sina_Weibo::call('users/show/'.$_SESSION['user_id']);
+//	$uinfo = OpenSDK_Sina_Weibo::call('users/show/'.OpenSDK_Sina_Weibo::getParam(OpenSDK_Sina_Weibo::OAUTH_USER_ID));
 	echo '你已经获得授权。你的授权信息:<br />';
 	echo 'Access token: ' , $_SESSION[OpenSDK_Sina_Weibo::ACCESS_TOKEN] , '<br />';
 	echo 'oauth_token_secret: ' , $_SESSION[OpenSDK_Sina_Weibo::OAUTH_TOKEN_SECRET] , '<br />';
 	echo '你的微博帐号信息为:<br /><pre>';
-	var_dump($uinfo);
+//	var_dump($uinfo);
 	/**
 	 * 上传一张图片，并发微博
 	 */
-	/*
-	var_dump( OpenSDK_Sina_Weibo::call('statuses/upload', array(
+	var_dump(
+	OpenSDK_Sina_Weibo::call('statuses/upload', array(
 		'status' => 'test pic',
-	), 'POST', array('pic'=>array(
-			'type' => 'image/jpg',
-			'name' => '0.jpg',
-			'data' => file_get_contents('0.jpg'),
-	))) );
-	 */
+	), 'POST', array(
+		'pic'=>dirname(__FILE__) . '/0.jpg'
+		)
+	)
+			);
 	$exit = true;
 }
 else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
@@ -52,7 +51,7 @@ else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
 	//从Callback返回时
 	if(OpenSDK_Sina_Weibo::getAccessToken($_GET['oauth_verifier']))
 	{
-		$uinfo = OpenSDK_Sina_Weibo::call('users/show/'.$_SESSION['user_id']);
+		$uinfo = OpenSDK_Sina_Weibo::call('users/show/'.OpenSDK_Sina_Weibo::getParam(OpenSDK_Sina_Weibo::OAUTH_USER_ID));
 		echo '从Opent返回并获得授权。你的微博帐号信息为：<br />';
 		echo 'Access token: ' , $_SESSION[OpenSDK_Sina_Weibo::ACCESS_TOKEN] , '<br />';
 		echo 'oauth_token_secret: ' , $_SESSION[OpenSDK_Sina_Weibo::OAUTH_TOKEN_SECRET] , '<br />';
