@@ -44,11 +44,7 @@ else if(isset($_SESSION[OpenSDK_Tencent_SNS::ACCESS_TOKEN]) && isset($_SESSION[O
 		'title' => 'test_pic',
 		'photodesc' => '来自OpenSDK的照片上传',
 	), 'POST', array(
-		'picture' => array(
-			'type' => 'image/jpg',
-			'name' => '0.jpg',
-			'data' => file_get_contents('0.jpg'),
-		),
+		'picture' => dirname(__FILE__) . '/0.jpg'
 	)) );
 	$exit = true;
 }
