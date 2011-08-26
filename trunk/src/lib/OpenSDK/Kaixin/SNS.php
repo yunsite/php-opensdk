@@ -74,13 +74,15 @@ class OpenSDK_Kaixin_SNS extends OpenSDK_OAuth_Interface
 	 * oauth_callback_confirmed：回调确认
 	 * 
 	 * @param string $callback 回调地址
+	 * @param string $scope 访问权限
 	 * @return array
 	 */
-	public static function getRequestToken($callback='null')
+	public static function getRequestToken($callback='null',$scope='basic')
 	{
 		self::getOAuth()->setTokenSecret('');
 		$response = self::request( self::$requestTokenURL, 'GET' , array(
 			'oauth_callback' => $callback,
+			'scope' => $scope,
 		));
 		parse_str($response , $rt);
 		if($rt['oauth_token'] && $rt['oauth_token_secret'])
