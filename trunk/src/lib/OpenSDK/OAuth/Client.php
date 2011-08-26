@@ -36,7 +36,7 @@ class OpenSDK_OAuth_Client
 	 * 上一次请求返回的Httpcode
 	 * @var number
 	 */
-	protected $_httpcode = null;
+	protected $_http_code = null;
 
 	/**
 	 * 是否debug
@@ -133,7 +133,10 @@ class OpenSDK_OAuth_Client
 
 	/**
 	 * Http请求接口
-	 * 
+	 * 优先使用curl，在不支持curl的情况下，使用socket操作
+	 *
+	 * 发送文件需要使用 $method = 'POST' ， 同时指定 $multi = array('{fieldname}'=>'/path/to/file)
+	 *
 	 * @param string $url
 	 * @param array $params
 	 * @param string $method 支持 GET / POST / DELETE
@@ -141,6 +144,110 @@ class OpenSDK_OAuth_Client
 	 * @return string
 	 */
 	protected function http( $url , $params , $method='GET' , $multi=false )
+	{
+		if(function_exists('curl_init'))
+		{
+			return $this->curl_http($url, $params, $method, $multi);
+		}
+		else
+		{
+			return $this->socket_http($url, $params, $method, $multi);
+		}
+	}
+
+	protected $_http_header = array();
+
+	protected $_useragent = 'OpenSDK-OAuth1.0';
+
+	protected $_http_info = array();
+
+	public $connecttimeout = 3;
+	public $timeout = 3;
+	public $ssl_verifypeer = false;
+
+	protected function curl_http( $url , $params , $method='GET' , $multi=false )
+	{
+		$ci = curl_init();
+		curl_setopt($ci, CURLOPT_USERAGENT, $this->_useragent);
+        curl_setopt($ci, CURLOPT_CONNECTTIMEOUT, $this->connecttimeout);
+        curl_setopt($ci, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($ci, CURLOPT_RETURNTRANSFER, true);
+
+        curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
+
+        curl_setopt($ci, CURLOPT_HEADERFUNCTION, array($this, 'getHeader'));
+
+        curl_setopt($ci, CURLOPT_HEADER, false);
+
+		switch ($method) 
+		{
+			case 'POST':
+				curl_setopt($ci, CURLOPT_POST, TRUE);
+				if (!empty($params))
+				{
+					if($multi)
+					{
+						foreach($multi as $key => $file)
+						{
+							$params[$key] = '@' . $file;
+						}
+						curl_setopt($ci, CURLOPT_POSTFIELDS, $params);
+						curl_setopt($ci, CURLOPT_HTTPHEADER, array('Expect: ') );
+					}
+					else
+					{
+						curl_setopt($ci, CURLOPT_POSTFIELDS, http_build_query($params));
+					}
+				}
+				break;
+			case 'DELETE':
+			case 'GET':
+				$method == 'DELETE' && curl_setopt($ci, CURLOPT_CUSTOMREQUEST, 'DELETE');
+				if (!empty($params))
+				{
+					$url = $url . (strpos($url, '?') ? '&' : '?')
+						. (is_array($params) ? http_build_query($params) : $params);
+				}
+				break;
+        }
+        curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE );
+        curl_setopt($ci, CURLOPT_URL, $url);
+
+        $response = curl_exec($ci);
+        $this->_http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE);
+        $this->_http_info = array_merge($this->_http_info, curl_getinfo($ci));
+
+        curl_close ($ci);
+        return $response;
+	}
+
+	/**
+     * Get the header info to store.
+     *
+     * @return int
+     */
+    function getHeader($ch, $header)
+	{
+        $i = strpos($header, ':');
+        if (!empty($i))
+		{
+            $key = str_replace('-', '_', strtolower(substr($header, 0, $i)));
+            $value = trim(substr($header, $i + 2));
+            $this->_http_header[$key] = $value;
+        }
+        return strlen($header);
+    }
+
+	/**
+	 * Http请求接口
+	 * 
+	 * @param string $url
+	 * @param array $params
+	 * @param string $method 支持 GET / POST / DELETE
+	 * @param false|array $multi false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
+	 * @return string
+	 */
+	protected function socket_http( $url , $params , $method='GET' , $multi=false )
 	{
 		$method = strtoupper($method);
 		$postdata = '';
@@ -184,7 +291,7 @@ class OpenSDK_OAuth_Client
 			$headers[] = "POST $urlpath HTTP/$version";
 		}
 		$headers[] = 'Host: ' . $host;
-		$headers[] = 'User-Agent: OpenSDK-OAuth';
+		$headers[] = 'User-Agent: '.$this->_useragent;
 		$headers[] = 'Connection: Close';
 
 		if($method == 'POST')
@@ -254,7 +361,7 @@ class OpenSDK_OAuth_Client
 				$responseHead = trim(substr($ret, 0 , $pos));
 				$responseHeads = explode("\r\n", $responseHead);
 				$httpcode = explode(' ', $responseHeads[0]);
-				$this->_httpcode = $httpcode[1];
+				$this->_http_code = $httpcode[1];
 				if(strpos( substr($ret , 0 , $pos), 'Transfer-Encoding: chunked'))
 				{
 					$response = explode("\r\n", $rt);
@@ -294,7 +401,7 @@ class OpenSDK_OAuth_Client
 	 */
 	public function getHttpCode()
 	{
-		return $this->_httpcode;
+		return $this->_http_code;
 	}
 
 	protected function fwrite($handle,$data)
