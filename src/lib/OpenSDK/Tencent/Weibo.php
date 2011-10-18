@@ -159,7 +159,7 @@ class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
 	 * @param array $params 官方说明中接受的参数列表，一个关联数组
 	 * @param string $method 官方说明中的 method GET/POST
 	 * @param false|array $multi 是否上传文件 false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
-	 * @param bool $decode 是否对返回的字符串解码成数组
+	 * @param bool $decode 是否对返回的字符串解码成数组，默认true
 	 * @param OpenSDK_Tencent_Weibo::RETURN_JSON|OpenSDK_Tencent_Weibo::RETURN_XML $format 调用格式
 	 */
 	public static function call($command , $params=array() , $method = 'GET' , $multi=false ,$decode=true , $format=self::RETURN_JSON)
