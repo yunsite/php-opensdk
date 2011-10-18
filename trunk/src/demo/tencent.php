@@ -36,12 +36,18 @@ else if(isset($_SESSION[OpenSDK_Tencent_Weibo::ACCESS_TOKEN]) && isset($_SESSION
 	/**
 	 * 上传一张图片并发一条微博
 	 */
-	var_dump( OpenSDK_Tencent_Weibo::call('t/add_pic', array(
-		'content' => 'test pic',
-		'clientip' => '123.119.32.253',
-	), 'POST', array(
-		'pic' => dirname(__FILE__) . '/0.jpg',
-	)));
+	var_dump(
+
+            OpenSDK_Tencent_Weibo::call(
+                't/add_pic',
+                array(
+                    'content' => 'test pic',
+                    'clientip' => '123.119.32.253',
+                ),
+                'POST',
+                array('pic' => dirname(__FILE__) . '/0.jpg',)
+            )
+    );
 	$exit = true;
 }
 else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
