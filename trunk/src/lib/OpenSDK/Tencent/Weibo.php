@@ -68,6 +68,18 @@ class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
 	 */
 	const OAUTH_NAME = 'tencent_oauth_name';
 
+    /**
+	 * 存储oauth_openid的Session key
+     * 腾讯业务通用，与OpenSDK_Tencent_SNS::OAUTH_OPENID 值相同
+	 */
+	const OAUTH_OPENID = 'tensns_oauth_openid';
+
+    /**
+	 * 存储oauth_openkey的Session key
+     * 与OPENID配对使用
+	 */
+	const OAUTH_OPENKEY = 'tensns_oauth_openkey';
+
 	/**
 	 * 获取requestToken
 	 *
@@ -133,7 +145,11 @@ class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
 			self::getOAuth()->setTokenSecret($rt['oauth_token_secret']);
 			self::setParam(self::ACCESS_TOKEN, $rt['oauth_token']);
 			self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
-			self::setParam(self::OAUTH_NAME, $rt['name']);
+			//新文档说不再返回 name，但实际还是返回
+            self::setParam(self::OAUTH_NAME, $rt['name']);
+            //这两个参数竟然通过$_GET参数返回 囧 为何不在上面一同返回？ 囧
+            self::setParam(self::OAUTH_OPENID, $_GET['openid']);
+            self::setParam(self::OAUTH_OPENKEY, $_GET['openkey']);
 		}
 		return $rt;
     }

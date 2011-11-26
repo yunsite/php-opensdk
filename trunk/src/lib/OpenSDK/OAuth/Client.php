@@ -217,6 +217,17 @@ class OpenSDK_OAuth_Client
         $this->_http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE);
         $this->_http_info = array_merge($this->_http_info, curl_getinfo($ci));
 
+        if($this->_debug)
+        {
+            echo 'Http Code ' , $this->_http_code , "\r\n";
+            foreach ((array)$this->_http_info as $k => $v )
+            {
+                echo $k , ': ' , $v , "\r\n";
+            }
+            echo "\r\n";
+            echo $response;
+            echo "\r\n";
+        }
         curl_close ($ci);
         return $response;
 	}

@@ -81,6 +81,14 @@ class OpenSDK_OAuth_Interface
 
 	protected static $getParamFunc = null;
 
+    /**
+     *
+     * 获取OAuth交互Session参数
+     * 可以使用 param_set_save_handler 设置自定义的获取方法来覆盖默认的$_SESSION方法
+     *
+     * @param string $key Session key
+     * @return string
+     */
 	public static function getParam( $key )
 	{
 		if(null !== self::$getParamFunc && is_callable(self::$getParamFunc))
@@ -95,11 +103,12 @@ class OpenSDK_OAuth_Interface
 	 * 设置Session数据的存取方法
 	 * 类似于session_set_save_handler来重写Session的存取方法
 	 * 当你的token存储到跟用户相关的数据库中时非常有用
+     *
 	 * $get方法 接受1个参数 $key
 	 * $set方法 接受2个参数 $key $val
 	 *
-	 * @param function $get
-	 * @param function $set
+	 * @param function|callback $get
+	 * @param function|callback $set
 	 */
 	public static function param_set_save_handler( $get, $set)
 	{
@@ -109,6 +118,15 @@ class OpenSDK_OAuth_Interface
 
 	protected static $setParamFunc = null;
 
+    /**
+     *
+     * 设置OAuth交互Session参数
+     * 可以使用 param_set_save_handler 设置自定义的获取方法来覆盖默认的$_SESSION方法
+     * 当$val为null时，表示删除该Session key的值
+     *
+     * @param string $key Session key
+     * @param string $val Session val
+     */
 	public static function setParam( $key , $val=null)
 	{
 		if(null !== self::$setParamFunc && is_callable(self::$setParamFunc))
