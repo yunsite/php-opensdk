@@ -19,18 +19,21 @@ header('Content-Type: text/html; charset=utf-8');
 $exit = false;
 if(isset($_GET['exit']))
 {
-	unset($_SESSION[OpenSDK_Kaixin_SNS::OAUTH_TOKEN]);
-	unset($_SESSION[OpenSDK_Kaixin_SNS::ACCESS_TOKEN]);
-	unset($_SESSION[OpenSDK_Kaixin_SNS::OAUTH_TOKEN_SECRET]);
+    OpenSDK_Kaixin_SNS::setParam(OpenSDK_Kaixin_SNS::OAUTH_TOKEN, null);
+    OpenSDK_Kaixin_SNS::setParam(OpenSDK_Kaixin_SNS::ACCESS_TOKEN, null);
+    OpenSDK_Kaixin_SNS::setParam(OpenSDK_Kaixin_SNS::OAUTH_TOKEN_SECRET, null);
 	echo '<a href="?go_oauth">点击去授权</a>';
 }
-else if(isset($_SESSION[OpenSDK_Kaixin_SNS::ACCESS_TOKEN]) && isset($_SESSION[OpenSDK_Kaixin_SNS::OAUTH_TOKEN_SECRET]))
+else if(
+        OpenSDK_Kaixin_SNS::getParam (OpenSDK_Kaixin_SNS::ACCESS_TOKEN) && 
+        OpenSDK_Kaixin_SNS::getParam (OpenSDK_Kaixin_SNS::OAUTH_TOKEN_SECRET)
+        )
 {
 	//已经取得授权
 	$uinfo = OpenSDK_Kaixin_SNS::call('users/me');
 	echo '你已经获得授权。你的授权信息:<br />';
-	echo 'Access token: ' , $_SESSION[OpenSDK_Kaixin_SNS::ACCESS_TOKEN] , '<br />';
-	echo 'oauth_token_secret: ' , $_SESSION[OpenSDK_Kaixin_SNS::OAUTH_TOKEN_SECRET] , '<br />';
+	echo 'Access token: ' , OpenSDK_Kaixin_SNS::getParam (OpenSDK_Kaixin_SNS::ACCESS_TOKEN) , '<br />';
+	echo 'oauth_token_secret: ' , OpenSDK_Kaixin_SNS::getParam (OpenSDK_Kaixin_SNS::OAUTH_TOKEN_SECRET) , '<br />';
 	echo '你的开心网帐号信息为:<br /><pre>';
 	var_dump($uinfo);
 	var_dump(OpenSDK_Kaixin_SNS::getOAuth()->getHttpCode());
@@ -43,15 +46,14 @@ else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
 	{
 		$uinfo = OpenSDK_Kaixin_SNS::call('users/me');
 		echo '从Opent返回并获得授权。你的开心网帐号信息为：<br />';
-		echo 'Access token: ' , $_SESSION[OpenSDK_Kaixin_SNS::ACCESS_TOKEN] , '<br />';
-		echo 'oauth_token_secret: ' , $_SESSION[OpenSDK_Kaixin_SNS::OAUTH_TOKEN_SECRET] , '<br />';
+		echo 'Access token: ' , OpenSDK_Kaixin_SNS::getParam (OpenSDK_Kaixin_SNS::ACCESS_TOKEN) , '<br />';
+		echo 'oauth_token_secret: ' , OpenSDK_Kaixin_SNS::getParam (OpenSDK_Kaixin_SNS::OAUTH_TOKEN_SECRET) , '<br />';
 		echo '你的开心网帐号信息为:<br /><pre>';
 		var_dump($uinfo);
 		var_dump(OpenSDK_Kaixin_SNS::getOAuth()->getHttpCode());
 	}
 	else
 	{
-		var_dump($_SESSION);
 		echo '获得Access Tokn 失败';
 	}
 	$exit = true;

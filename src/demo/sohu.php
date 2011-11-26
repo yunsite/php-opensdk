@@ -19,18 +19,21 @@ header('Content-Type: text/html; charset=utf-8');
 $exit = false;
 if(isset($_GET['exit']))
 {
-	unset($_SESSION[OpenSDK_Sohu_Weibo::OAUTH_TOKEN]);
-	unset($_SESSION[OpenSDK_Sohu_Weibo::ACCESS_TOKEN]);
-	unset($_SESSION[OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET]);
+    OpenSDK_Sohu_Weibo::setParam(OpenSDK_Sohu_Weibo::OAUTH_TOKEN, null);
+    OpenSDK_Sohu_Weibo::setParam(OpenSDK_Sohu_Weibo::ACCESS_TOKEN, null);
+    OpenSDK_Sohu_Weibo::setParam(OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET, null);
 	echo '<a href="?go_oauth">点击去授权</a>';
 }
-else if(isset($_SESSION[OpenSDK_Sohu_Weibo::ACCESS_TOKEN]) && isset($_SESSION[OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET]))
+else if(
+        OpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::ACCESS_TOKEN) && 
+        OpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET)
+         )
 {
 	//已经取得授权
 	$uinfo = OpenSDK_Sohu_Weibo::call('users/show');
 	echo '你已经获得授权。你的授权信息:<br />';
-	echo 'Access token: ' , $_SESSION[OpenSDK_Sohu_Weibo::ACCESS_TOKEN] , '<br />';
-	echo 'oauth_token_secret: ' , $_SESSION[OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET] , '<br />';
+	echo 'Access token: ' , OpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::ACCESS_TOKEN) , '<br />';
+	echo 'oauth_token_secret: ' , OpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET) , '<br />';
 	echo '你的微博帐号信息为:<br /><pre>';
 	var_dump($uinfo);
 //	OpenSDK_Sohu_Weibo::call('statuses/update', array('status'=>'一条来自OpenSDK的微博'), 'POST');
@@ -40,12 +43,14 @@ else if(isset($_SESSION[OpenSDK_Sohu_Weibo::ACCESS_TOKEN]) && isset($_SESSION[Op
 				'pic'=>dirname(__FILE__) . '/0.jpg',
 		)));
 //	更新头像
+    /*
 	var_dump(
 		OpenSDK_Sohu_Weibo::call('account/update_profile_image', array(), 'POST',
 				array(
 			'image'=>dirname(__FILE__) . '/0.jpg',
 			)));
-	$exit = true;
+	*/
+    $exit = true;
 }
 else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
 {
@@ -54,14 +59,13 @@ else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
 	{
 		$uinfo = OpenSDK_Sohu_Weibo::call('users/show');
 		echo '从Opent返回并获得授权。你的微博帐号信息为：<br />';
-		echo 'Access token: ' , $_SESSION[OpenSDK_Sohu_Weibo::ACCESS_TOKEN] , '<br />';
-		echo 'oauth_token_secret: ' , $_SESSION[OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET] , '<br />';
+		echo 'Access token: ' , OpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::ACCESS_TOKEN) , '<br />';
+		echo 'oauth_token_secret: ' , $_SESSIONOpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET) , '<br />';
 		echo '你的微博帐号信息为:<br /><pre>';
 		var_dump($uinfo);
 	}
 	else
 	{
-		var_dump($_SESSION);
 		echo '获得Access Tokn 失败';
 	}
 	$exit = true;
