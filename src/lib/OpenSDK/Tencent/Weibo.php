@@ -34,6 +34,28 @@ require_once 'OpenSDK/OAuth/Interface.php';
 class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
 {
 
+    /**
+	 * app key
+	 * @var string
+	 */
+	protected static $_appkey = '';
+	/**
+	 * app secret
+	 * @var string
+	 */
+	protected static $_appsecret = '';
+
+    /**
+	 * 初始化
+	 * @param string $appkey
+	 * @param string $appsecret
+	 */
+	public static function init($appkey,$appsecret)
+	{
+        self::$_appkey = $appkey;
+		self::$_appsecret = $appsecret;
+	}
+    
 	private static $accessTokenURL = 'http://open.t.qq.com/cgi-bin/access_token';
 
 	private static $authorizeURL = 'http://open.t.qq.com/cgi-bin/authorize';
