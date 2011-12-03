@@ -1,7 +1,5 @@
 <?php
 
-require_once 'OpenSDK/OAuth/Client.php';
-
 /**
  * OAuth1.0 SDK Interface
  *
@@ -12,38 +10,38 @@ require_once 'OpenSDK/OAuth/Client.php';
 
 class OpenSDK_OAuth_Interface
 {
-	
-	const RETURN_JSON = 'json';
-	const RETURN_XML = 'xml';
 
-	protected static $timestampFunc = null;
+    const RETURN_JSON = 'json';
+    const RETURN_XML = 'xml';
 
-	/**
-	 * 获得本机时间戳的方法
-	 * 如果服务器时钟存在误差，在这里调整
-	 * 
-	 * @return number
-	 */
-	public static function getTimestamp()
-	{
-		if(null !== self::$timestampFunc && is_callable(self::$timestampFunc))
-		{
-			return call_user_func(self::$timestampFunc);
-		}
-		return time();
-	}
+    protected static $timestampFunc = null;
 
-	/**
-	 * 设置获取时间戳的方法
-	 *
-	 * @param function $func
-	 */
-	public static function timestamp_set_save_handler( $func )
-	{
-		self::$timestampFunc = $func;
-	}
+    /**
+     * 获得本机时间戳的方法
+     * 如果服务器时钟存在误差，在这里调整
+     *
+     * @return number
+     */
+    public static function getTimestamp()
+    {
+        if(null !== self::$timestampFunc && is_callable(self::$timestampFunc))
+        {
+            return call_user_func(self::$timestampFunc);
+        }
+        return time();
+    }
 
-	protected static $getParamFunc = null;
+    /**
+     * 设置获取时间戳的方法
+     *
+     * @param function $func
+     */
+    public static function timestamp_set_save_handler( $func )
+    {
+        self::$timestampFunc = $func;
+    }
+
+    protected static $getParamFunc = null;
 
     /**
      *
@@ -53,34 +51,34 @@ class OpenSDK_OAuth_Interface
      * @param string $key Session key
      * @return string
      */
-	public static function getParam( $key )
-	{
-		if(null !== self::$getParamFunc && is_callable(self::$getParamFunc))
-		{
-			return call_user_func(self::$getParamFunc, $key);
-		}
-		return $_SESSION[ $key ];
-	}
+    public static function getParam( $key )
+    {
+        if(null !== self::$getParamFunc && is_callable(self::$getParamFunc))
+        {
+            return call_user_func(self::$getParamFunc, $key);
+        }
+        return isset($_SESSION[ $key ]) ? $_SESSION[ $key ] : null;
+    }
 
-	/**
-	 *
-	 * 设置Session数据的存取方法
-	 * 类似于session_set_save_handler来重写Session的存取方法
-	 * 当你的token存储到跟用户相关的数据库中时非常有用
+    /**
      *
-	 * $get方法 接受1个参数 $key
-	 * $set方法 接受2个参数 $key $val
-	 *
-	 * @param function|callback $get
-	 * @param function|callback $set
-	 */
-	public static function param_set_save_handler( $get, $set)
-	{
-		self::$getParamFunc = $get;
-		self::$setParamFunc = $set;
-	}
+     * 设置Session数据的存取方法
+     * 类似于session_set_save_handler来重写Session的存取方法
+     * 当你的token存储到跟用户相关的数据库中时非常有用
+     *
+     * $get方法 接受1个参数 $key
+     * $set方法 接受2个参数 $key $val
+     *
+     * @param function|callback $get
+     * @param function|callback $set
+     */
+    public static function param_set_save_handler( $get, $set)
+    {
+        self::$getParamFunc = $get;
+        self::$setParamFunc = $set;
+    }
 
-	protected static $setParamFunc = null;
+    protected static $setParamFunc = null;
 
     /**
      *
@@ -91,18 +89,18 @@ class OpenSDK_OAuth_Interface
      * @param string $key Session key
      * @param string $val Session val
      */
-	public static function setParam( $key , $val=null)
-	{
-		if(null !== self::$setParamFunc && is_callable(self::$setParamFunc))
-		{
-			return call_user_func(self::$setParamFunc, $key, $val);
-		}
-		if( null === $val)
-		{
-			unset($_SESSION[$key]);
-			return ;
-		}
-		$_SESSION[ $key ] = $val;
-	}
+    public static function setParam( $key , $val=null)
+    {
+        if(null !== self::$setParamFunc && is_callable(self::$setParamFunc))
+        {
+            return call_user_func(self::$setParamFunc, $key, $val);
+        }
+        if( null === $val)
+        {
+            unset($_SESSION[$key]);
+            return ;
+        }
+        $_SESSION[ $key ] = $val;
+    }
 
 }
