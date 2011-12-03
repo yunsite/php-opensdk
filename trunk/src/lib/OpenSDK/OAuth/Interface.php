@@ -12,45 +12,9 @@ require_once 'OpenSDK/OAuth/Client.php';
 
 class OpenSDK_OAuth_Interface
 {
-
-	/**
-	 * app key
-	 * @var string
-	 */
-	protected static $_appkey = '';
-	/**
-	 * app secret
-	 * @var string
-	 */
-	protected static $_appsecret = '';
-
-	/**
-	 * OAuth 版本
-	 * @var string
-	 */
-	protected static $version = '1.0';
 	
 	const RETURN_JSON = 'json';
 	const RETURN_XML = 'xml';
-	/**
-	 * 初始化
-	 * @param string $appkey
-	 * @param string $appsecret
-	 */
-	public static function init($appkey,$appsecret)
-	{
-		self::setAppkey($appkey, $appsecret);
-	}
-	/**
-	 * 设置APP Key 和 APP Secret
-	 * @param string $appkey
-	 * @param string $appsecret
-	 */
-	protected static function setAppkey($appkey,$appsecret)
-	{
-		self::$_appkey = $appkey;
-		self::$_appsecret = $appsecret;
-	}
 
 	protected static $timestampFunc = null;
 
