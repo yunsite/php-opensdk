@@ -173,8 +173,9 @@ class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
             //这两个参数竟然通过$_GET参数返回 囧 为何不在上面一同返回？ 囧
             self::setParam(self::OAUTH_OPENID, $_GET['openid']);
             self::setParam(self::OAUTH_OPENKEY, $_GET['openkey']);
+            return $rt;
         }
-        return $rt;
+        return false;
     }
 
     /**

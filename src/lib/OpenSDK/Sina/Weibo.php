@@ -164,8 +164,9 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
             self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
             self::setParam(self::OAUTH_SCREEN_NAME, $rt['screen_name']);
             self::setParam(self::OAUTH_USER_ID, $rt['user_id']);
+            return $rt;
         }
-        return $rt;
+        return false;
     }
 
     /**
