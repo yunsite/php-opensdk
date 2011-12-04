@@ -155,8 +155,9 @@ class OpenSDK_Tencent_SNS extends OpenSDK_OAuth_Interface
             self::setParam(self::ACCESS_TOKEN, $rt['oauth_token']);
             self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
             self::setParam(self::OAUTH_OPENID, $rt['openid']);
+            return $rt;
         }
-        return $rt;
+        return false;
     }
 
     /**

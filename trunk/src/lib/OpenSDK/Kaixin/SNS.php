@@ -154,8 +154,9 @@ class OpenSDK_Kaixin_SNS extends OpenSDK_OAuth_Interface
             self::getOAuth()->setTokenSecret($rt['oauth_token_secret']);
             self::setParam(self::ACCESS_TOKEN, $rt['oauth_token']);
             self::setParam(self::OAUTH_TOKEN_SECRET, $rt['oauth_token_secret']);
+            return $rt;
         }
-        return $rt;
+        return false;
     }
 
     /**
