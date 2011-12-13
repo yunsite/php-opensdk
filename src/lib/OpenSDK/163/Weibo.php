@@ -142,7 +142,6 @@ class OpenSDK_163_Weibo extends OpenSDK_OAuth_Interface
     {
         $param = array(
             'oauth_token' => self::getParam(self::OAUTH_TOKEN),
-            'oauth_verifier' => $oauth_verifier,
         );
         $oauth_verifier && $param['oauth_verifier'] = $oauth_verifier;
         $response = self::request( self::$accessTokenURL, 'GET' , $param);
