@@ -60,7 +60,7 @@ else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
 		$uinfo = OpenSDK_Sohu_Weibo::call('users/show');
 		echo '从Opent返回并获得授权。你的微博帐号信息为：<br />';
 		echo 'Access token: ' , OpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::ACCESS_TOKEN) , '<br />';
-		echo 'oauth_token_secret: ' , $_SESSIONOpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET) , '<br />';
+		echo 'oauth_token_secret: ' , OpenSDK_Sohu_Weibo::getParam (OpenSDK_Sohu_Weibo::OAUTH_TOKEN_SECRET) , '<br />';
 		echo '你的微博帐号信息为:<br /><pre>';
 		var_dump($uinfo);
 	}
