@@ -4,8 +4,8 @@ require_once 'OpenSDK/OAuth/Client.php';
 require_once 'OpenSDK/OAuth/Interface.php';
 
 /**
- * Tencent 微博 SDK
- *
+ * Tencent 微博开放平台 SDK
+ * http://open.t.qq.com
  * 依赖：
  * 1、PECL json >= 1.2.0    no need now
  * 2、PHP >= 5.2.0 because json_decode no need now

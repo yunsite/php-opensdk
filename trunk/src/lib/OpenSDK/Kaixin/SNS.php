@@ -4,8 +4,8 @@ require_once 'OpenSDK/OAuth/Client.php';
 require_once 'OpenSDK/OAuth/Interface.php';
 
 /**
- * Sina 微博 SDK
- *
+ * 开心网 OAuth1.0 SDK
+ * http://open.kaixin001.com/
  * 依赖：
  * 1、PECL json >= 1.2.0    (no need now)
  * 2、PHP >= 5.2.0 because json_decode (no need now)

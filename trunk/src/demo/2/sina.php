@@ -77,7 +77,7 @@ else if(isset($_GET['go_oauth']))
 }
 else
 {
-    echo '<a href="?go_oauth">点击去授权</a>';
+    echo 'sina微博OAuth2.0演示<a href="?go_oauth">点击去授权</a>';
 }
 if($exit)
 {
