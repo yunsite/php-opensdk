@@ -4,7 +4,7 @@ require_once 'OpenSDK/OAuth/Client.php';
 require_once 'OpenSDK/OAuth/Interface.php';
 
 /**
- * Sina 微博 SDK
+ * Sina 微博开放平台（http://open.weibo.com） SDK
  *
  * 依赖：
  * 1、PECL json >= 1.2.0    (no need now)

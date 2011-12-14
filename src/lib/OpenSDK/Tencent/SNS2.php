@@ -4,7 +4,8 @@ require_once 'OpenSDK/OAuth2/Client.php';
 require_once 'OpenSDK/OAuth/Interface.php';
 
 /**
- * Sina 微博开放平台（http://open.weibo.com） SDK OAuth2.0
+ * 腾讯社区开放平台（QQ登陆）http://opensns.qq.com OAuth2.0 SDK
+ * 腾讯社区开放平台无论是OAuth1.0还是OAuth2.0都有很多地方不遵守规范，让人很蛋疼。请源代码中搜索 “囧” 查看不守规范的地方
  *
  * 依赖：
  * 1、PECL json >= 1.2.0    (no need now)
@@ -16,11 +17,11 @@ require_once 'OpenSDK/OAuth/Interface.php';
  *
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
- * 2、require_once 'OpenSDK/Sina/Weibo2.php';
- * 3、OpenSDK_Sina_Weibo2::init($appkey,$appsecret);
- * 4、OpenSDK_Sina_Weibo2::getAuthorizeURL(); 获得跳转授权URL
- * 5、OpenSDK_Sina_Weibo2::getAccessToken() 获得access token
- * 6、OpenSDK_Sina_Weibo2::call();调用API接口
+ * 2、require_once 'OpenSDK/Tencent/SNS2.php';
+ * 3、OpenSDK_Tencent_SNS2::init($appkey,$appsecret);
+ * 4、OpenSDK_Tencent_SNS2::getAuthorizeURL($token); 获得跳转授权URL
+ * 5、OpenSDK_Tencent_SNS2::getAccessToken() 获得access token
+ * 6、OpenSDK_Tencent_SNS2::call();调用API接口
  *
  * 建议：
  * 1、PHP5.2 以下版本，可以使用Pear库中的 Service_JSON 来兼容json_decode
@@ -31,7 +32,7 @@ require_once 'OpenSDK/OAuth/Interface.php';
  * @author icehu@vip.qq.com
  */
 
-class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
+class OpenSDK_Tencent_SNS2 extends OpenSDK_OAuth_Interface
 {
 
     /**
@@ -55,16 +56,18 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
         self::$client_id = $appkey;
         self::$client_secret = $appsecret;
     }
-    
+
     /**
      * OAuth 对象
      * @var OpenSDK_OAuth_Client
      */
     private static $oauth = null;
 
-    private static $accessTokenURL = 'https://api.weibo.com/oauth2/access_token';
+    private static $accessTokenURL = 'https://graph.qq.com/oauth2.0/token';
 
-    private static $authorizeURL = 'https://api.weibo.com/oauth2/authorize';
+    private static $authorizeURL = 'https://graph.qq.com/oauth2.0/authorize';
+
+    private static $openidURL = 'https://graph.qq.com/oauth2.0/me';
 
     /**
      * OAuth 版本
@@ -75,34 +78,36 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
     /**
      * 存储access_token的session key
      */
-    const ACCESS_TOKEN = 'sina2_access_token';
+    const ACCESS_TOKEN = 'tensns2_access_token';
 
     /**
      * 存储refresh_token的session key
      */
-    const REFRESH_TOKEN = 'sina2_refresh_token';
+    const REFRESH_TOKEN = 'tensns2_refresh_token';
 
     /**
      * 存储expires_in的sieesion key
      */
-    const EXPIRES_IN = 'sina2_expires_in';
+    const EXPIRES_IN = 'tensns2_expires_in';
+
+    /**
+     * 存储scope 的session key
+     */
+    const SCOPE = 'tensns2_scope';
+
+    /**
+     * 存储OPENID的session key
+     */
+    const OPENID = 'tensns2_openid';
 
     /**
      * authorize接口
      *
-     * 对应API：{@link http://open.weibo.com/wiki/Oauth2/authorize Oauth2/authorize}
-     *
      * @param string $url 授权后的回调地址,站外应用需与回调地址一致,站内应用需要填写canvas page的地址
      * @param string $response_type 支持的值包括 code 和token 默认值为code
      * @param string $state 用于保持请求和回调的状态。在回调时,会在Query Parameter中回传该参数
-     * @param string $display 授权页面类型 可选范围:
-     *  - default       默认授权页面
-     *  - mobile        支持html5的手机
-     *  - popup         弹窗授权页
-     *  - wap1.2        wap1.2页面
-     *  - wap2.0        wap2.0页面
-     *  - js            js-sdk 专用 授权页面是弹窗，返回结果为js-sdk回掉函数
-     *  - apponweibo    站内应用专用,站内应用不传display参数,并且response_type为token时,默认使用改display.授权后不会返回access_token，只是输出js刷新站内应用父框架
+     * @param string $display 用于展示的样式。不传则默认展示为为PC下的样式。
+     * 如果传入“mobile”，则展示为mobile端下的样式。
      * @return string
      */
     public static function getAuthorizeURL($url,$response_type,$state,$display='default')
@@ -115,11 +120,6 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
         $params['display'] = $display;
         return self::$authorizeURL . '?' . http_build_query($params);
     }
-
-    /**
-     * 存储sina user_id的session key
-     */
-    const OAUTH_USER_ID = 'sina_user_id';
 
     /**
 	 * access_token接口
@@ -154,19 +154,42 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
         }
 
         $response = self::request(self::$accessTokenURL , 'POST', $params);
-        $token = OpenSDK_Util::json_decode($response, true);
-        if ( is_array($token) && !isset($token['error']) ) 
+//        $token = OpenSDK_Util::json_decode($response, true);
+        //囧 QQ登陆处处不守规矩 这里又不符合OAuth2.0规范
+        parse_str($response,$token);
+        if ( is_array($token) && !isset($token['error']) )
         {
             self::setParam(self::ACCESS_TOKEN, $token['access_token']);
+            //目前不返回Refresh token
             self::setParam(self::REFRESH_TOKEN, $token['refresh_token']);
             self::setParam(self::EXPIRES_IN, $token['expires_in']);
-            self::setParam(self::OAUTH_USER_ID, $token['uid']);
-        } 
+//            self::setParam(self::SCOPE, $token['scope']);
+            self::getOpenID();
+        }
         else
         {
             exit("get access token failed." . $token['error']);
         }
         return $token;
+    }
+
+    /**
+     * 获取OPENID
+     * OPENID 为什么不在获取ACCESS_TOKEN的时候返回呢？囧
+     */
+    protected static function getOpenID()
+    {
+        $response = self::request(self::$openidURL , 'GET', array(
+            'access_token' => self::getParam(self::ACCESS_TOKEN),
+        ));
+        //囧，为什么一定要返回个 callback( ); 囧
+        //callback( json );
+        $json = substr($response,10,-3);
+        $token = OpenSDK_Util::json_decode($json, true);
+        if($token['openid'])
+        {
+            self::setParam(self::OPENID, $token['openid']);
+        }
     }
 
     /**
@@ -186,7 +209,7 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
      *    ...如果接受多个文件，可以再加
      * )
      *
-     * @param string $command 官方说明中去掉 https://api.weibo.com/2/ 后面剩余的部分
+     * @param string $command 官方说明中去掉 https://graph.qq.com/ 后面剩余的部分
      * @param array $params 官方说明中接受的参数列表，一个关联数组
      * @param string $method 官方说明中的 method GET/POST
      * @param false|array $multi 是否上传文件 false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
@@ -208,8 +231,11 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
             }
         }
         $params['access_token'] = self::getParam(self::ACCESS_TOKEN);
-        $params['source'] = self::$client_id;
-        $response = self::request( 'https://api.weibo.com/2/'.ltrim($command,'/').'.'.$format , $method, $params, $multi);
+        //这里没有遵守 OAuth2.0的规范，规范参数应该是source
+        $params['oauth_consumer_key'] = self::$client_id;
+        $params['openid'] = self::getParam(self::OPENID);
+        $params['format'] = $format;
+        $response = self::request( 'https://graph.qq.com/'.ltrim($command,'/') , $method, $params, $multi);
         if($decode)
         {
             if( $format == self::RETURN_JSON )
@@ -237,7 +263,7 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
     {
         if( null === self::$oauth )
         {
-            self::$oauth = new OpenSDK_OAuth2_Client();
+            self::$oauth = new OpenSDK_OAuth2_Client(false);
         }
         return self::$oauth;
     }

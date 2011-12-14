@@ -4,8 +4,8 @@ require_once 'OpenSDK/OAuth/Interface.php';
 require_once 'OpenSDK/OAuth/QQSNSClient.php';
 
 /**
- * Tencent OpenSNS SDK
- *
+ * 腾讯社区开放平台（QQ登陆）http://opensns.qq.com OAuth1.0 SDK
+ * 腾讯社区开放平台无论是OAuth1.0还是OAuth2.0都有很多地方不遵守规范，让人很蛋疼。请源代码中搜索 “囧” 查看不守规范的地方
  * 依赖：
  * 1、PECL json >= 1.2.0    no need now
  * 2、PHP >= 5.2.0 because json_decode no need now
