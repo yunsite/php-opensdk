@@ -215,6 +215,15 @@ class OpenSDK_Sohu_Weibo extends OpenSDK_OAuth_Interface
     }
 
     /**
+     * 重置Oauth对象
+     * 在批量脚本中，如果同时操作多个用户，完成一个用户的操作后，需要重置
+     */
+    public static function clearOauth()
+    {
+        self::$oauth = null;
+    }
+    
+    /**
      * 获得OAuth 对象
      * @return OpenSDK_OAuth_Client
      */
