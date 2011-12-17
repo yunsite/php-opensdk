@@ -17,11 +17,11 @@ require_once 'OpenSDK/OAuth/Interface.php';
  * 如何使用：
  * 1、将OpenSDK文件夹放入include_path
  * 2、require_once 'OpenSDK/Douban/Open.php';
- * 3、OpenSDK_Douban_Weibo::init($appkey,$appsecret);
- * 4、OpenSDK_Douban_Weibo::getRequestToken($callback); 获得request token
- * 5、OpenSDK_Douban_Weibo::getAuthorizeURL($token); 获得跳转授权URL
- * 6、OpenSDK_Douban_Weibo::getAccessToken($oauth_verifier) 获得access token
- * 7、OpenSDK_Douban_Weibo::call();调用API接口
+ * 3、OpenSDK_Douban_Open::init($appkey,$appsecret);
+ * 4、OpenSDK_Douban_Open::getRequestToken($callback); 获得request token
+ * 5、OpenSDK_Douban_Open::getAuthorizeURL($token); 获得跳转授权URL
+ * 6、OpenSDK_Douban_Open::getAccessToken($oauth_verifier) 获得access token
+ * 7、OpenSDK_Douban_Open::call();调用API接口
  *
  * 建议：
  * 1、PHP5.2 以下版本，可以使用Pear库中的 Service_JSON 来兼容json_decode
@@ -97,9 +97,7 @@ class OpenSDK_Douban_Open extends OpenSDK_OAuth_Interface
      * 返回的数组包括：
      * oauth_token：返回的request_token
      * oauth_token_secret：返回的request_secret
-     * oauth_callback_confirmed：回调确认
      *
-     * @param string $callback 回调地址
      * @return array
      */
     public static function getRequestToken()
@@ -125,7 +123,7 @@ class OpenSDK_Douban_Open extends OpenSDK_OAuth_Interface
      * 获得授权URL
      *
      * @param string|array $token
-     * @param bool $mini 是否mini窗口
+     * @param string $callback 返回地址
      * @return string
      */
     public static function getAuthorizeURL($token , $callback)
