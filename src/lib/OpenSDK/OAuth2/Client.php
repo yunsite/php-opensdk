@@ -39,11 +39,12 @@ class OpenSDK_OAuth2_Client
      * @param array $params
      * @param string $method
      * @param false|array $multi false:普通post array: array ( '{fieldname}' =>array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
+     * @param array $extheaders 附加的HTTP头信息
      * @return string
      */
-    public function request( $url, $method, $params, $multi = false )
+    public function request( $url, $method, $params, $multi = false ,$extheaders=array())
     {
-        return $this->http($url, $params, $method, $multi);
+        return $this->http($url, $params, $method, $multi ,$extheaders);
     }
 
     /**
@@ -58,9 +59,9 @@ class OpenSDK_OAuth2_Client
      * @param false|array $multi false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
      * @return string
      */
-    protected function http( $url , $params , $method='GET' , $multi=false )
+    protected function http( $url , $params , $method='GET' , $multi=false ,$extheaders=array())
     {
-        return $this->curl_http($url, $params, $method, $multi);
+        return $this->curl_http($url, $params, $method, $multi ,$extheaders);
     }
 
     protected $_http_header = array();
@@ -73,7 +74,7 @@ class OpenSDK_OAuth2_Client
     public $timeout = 3;
     public $ssl_verifypeer = false;
 
-    protected function curl_http( $url , $params , $method='GET' , $multi=false )
+    protected function curl_http( $url , $params , $method='GET' , $multi=false ,$extheaders=array())
     {
         $ci = curl_init();
         curl_setopt($ci, CURLOPT_USERAGENT, $this->_useragent);
@@ -87,6 +88,7 @@ class OpenSDK_OAuth2_Client
 
         curl_setopt($ci, CURLOPT_HEADER, false);
 
+        $headers = (array)$extheaders;
         switch ($method)
         {
             case 'POST':
@@ -100,7 +102,7 @@ class OpenSDK_OAuth2_Client
                             $params[$key] = '@' . $file;
                         }
                         curl_setopt($ci, CURLOPT_POSTFIELDS, $params);
-                        curl_setopt($ci, CURLOPT_HTTPHEADER, array('Expect: ') );
+                        $headers[] = 'Expect: ';
                     }
                     else
                     {
@@ -120,6 +122,10 @@ class OpenSDK_OAuth2_Client
         }
         curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE );
         curl_setopt($ci, CURLOPT_URL, $url);
+        if($headers)
+        {
+            curl_setopt($ci, CURLOPT_HTTPHEADER, $headers );
+        }
 
         $response = curl_exec($ci);
         $this->_http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE);

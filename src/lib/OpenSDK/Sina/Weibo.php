@@ -277,7 +277,11 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
         $params['oauth_signature_method'] = 'HMAC-SHA1';
         $params['oauth_version'] = self::$version;
         $params['oauth_timestamp'] = self::getTimestamp();
-        return self::getOAuth()->request($url, $method, $params, $multi);
+        $extheaders = array(
+            'API-RemoteIP: ' . self::getRemoteIp(),
+            'SaeRemoteIP: ' . self::getRemoteIp(),
+        );
+        return self::getOAuth()->request($url, $method, $params, $multi,$extheaders);
     }
 
 }

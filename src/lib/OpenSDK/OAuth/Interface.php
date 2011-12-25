@@ -103,4 +103,20 @@ class OpenSDK_OAuth_Interface
         $_SESSION[ $key ] = $val;
     }
 
+    protected static $remot_ip = null;
+
+    /**
+     * 设置内容生产者的IP
+     * @param string $ip
+     */
+    public static function set_remote_ip($ip)
+    {
+        self::$remot_ip = $ip;
+    }
+
+    protected static function getRemoteIp()
+    {
+        return self::$remot_ip ? self::$remot_ip : $_SERVER['REMOTE_ADDR'];
+    }
+
 }
