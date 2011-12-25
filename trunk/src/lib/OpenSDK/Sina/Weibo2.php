@@ -259,7 +259,10 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
         {
             exit('app key or app secret not init');
         }
-        return self::getOAuth()->request($url, $method, $params, $multi);
+        $headers = array(
+            'API-RemoteIP: ' . self::getRemoteIp(),
+        );
+        return self::getOAuth()->request($url, $method, $params, $multi ,$headers);
     }
 
 }

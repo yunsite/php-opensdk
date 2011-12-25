@@ -74,13 +74,14 @@ class OpenSDK_OAuth_Client
      * @param array $params
      * @param string $method
      * @param false|array $multi false:普通post array: array ( '{fieldname}' =>array('type'=>'mine','name'=>'filename','data'=>'filedata') ) 文件上传
+     * @param array $extheaders 附加的HTTP头信息
      * @return string
      */
-    public function request( $url, $method, $params, $multi = false )
+    public function request( $url, $method, $params, $multi = false , $extheaders=array())
     {
         $oauth_signature = $this->sign($url, $method, $params);
         $params[$this->oauth_signature_key] = $oauth_signature;
-        return $this->http($url, $params, $method, $multi);
+        return $this->http($url, $params, $method, $multi, $extheaders);
     }
 
     /**
@@ -143,15 +144,15 @@ class OpenSDK_OAuth_Client
      * @param false|array $multi false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
      * @return string
      */
-    protected function http( $url , $params , $method='GET' , $multi=false )
+    protected function http( $url , $params , $method='GET' , $multi=false , $extheaders=array())
     {
         if(function_exists('curl_init'))
         {
-            return $this->curl_http($url, $params, $method, $multi);
+            return $this->curl_http($url, $params, $method, $multi, $extheaders);
         }
         else
         {
-            return $this->socket_http($url, $params, $method, $multi);
+            return $this->socket_http($url, $params, $method, $multi, $extheaders);
         }
     }
 
@@ -165,7 +166,7 @@ class OpenSDK_OAuth_Client
     public $timeout = 3;
     public $ssl_verifypeer = false;
 
-    protected function curl_http( $url , $params , $method='GET' , $multi=false )
+    protected function curl_http( $url , $params , $method='GET' , $multi=false , $extheaders=array())
     {
         $ci = curl_init();
         curl_setopt($ci, CURLOPT_USERAGENT, $this->_useragent);
@@ -179,6 +180,7 @@ class OpenSDK_OAuth_Client
 
         curl_setopt($ci, CURLOPT_HEADER, false);
 
+        $headers = (array)$extheaders;
         switch ($method)
         {
             case 'POST':
@@ -192,7 +194,7 @@ class OpenSDK_OAuth_Client
                             $params[$key] = '@' . $file;
                         }
                         curl_setopt($ci, CURLOPT_POSTFIELDS, $params);
-                        curl_setopt($ci, CURLOPT_HTTPHEADER, array('Expect: ') );
+                        $headers[] = 'Expect: ';
                     }
                     else
                     {
@@ -212,6 +214,10 @@ class OpenSDK_OAuth_Client
         }
         curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE );
         curl_setopt($ci, CURLOPT_URL, $url);
+        if($headers)
+        {
+            curl_setopt($ci, CURLOPT_HTTPHEADER, $headers );
+        }
 
         $response = curl_exec($ci);
         $this->_http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE);
@@ -258,7 +264,7 @@ class OpenSDK_OAuth_Client
      * @param false|array $multi false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
      * @return string
      */
-    protected function socket_http( $url , $params , $method='GET' , $multi=false )
+    protected function socket_http( $url , $params , $method='GET' , $multi=false , $extheaders=array())
     {
         $method = strtoupper($method);
         $postdata = '';
@@ -303,6 +309,10 @@ class OpenSDK_OAuth_Client
         }
         $headers[] = 'Host: ' . $host;
         $headers[] = 'User-Agent: '.$this->_useragent;
+        foreach ((array)$extheaders as $head)
+        {
+            $headers[] = $head;
+        }
         $headers[] = 'Connection: Close';
 
         if($method == 'POST')
