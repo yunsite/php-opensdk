@@ -106,11 +106,15 @@ class OpenSDK_Tencent_SNS2 extends OpenSDK_OAuth_Interface
      * @param string $url 授权后的回调地址,站外应用需与回调地址一致,站内应用需要填写canvas page的地址
      * @param string $response_type 支持的值包括 code 和token 默认值为code
      * @param string $state 用于保持请求和回调的状态。在回调时,会在Query Parameter中回传该参数
-     * @param string $display 用于展示的样式。不传则默认展示为为PC下的样式。
-     * 如果传入“mobile”，则展示为mobile端下的样式。
+     * @param string $display 用于展示的样式。不传则默认展示为为PC下的样式。 如果传入“mobile”，则展示为mobile端下的样式。
+     * @param string $scope 请求用户授权时向用户显示的可进行授权的列表。
+     * 可填写的值是【QQ登录】API文档中列出的接口，以及一些动作型的授权（目前仅有：do_like），如果要填写多个接口名称，请用逗号隔开。
+     * 例如：scope=get_user_info,list_album,upload_pic,do_like
+     * 不传则默认请求对接口get_user_info进行授权。
+     * 建议控制授权项的数量，只传入必要的接口名称，因为授权项越多，用户越可能拒绝进行任何授权。
      * @return string
      */
-    public static function getAuthorizeURL($url,$response_type,$state,$display='default')
+    public static function getAuthorizeURL($url,$response_type,$state,$display='default',$scope='')
     {
         $params = array();
         $params['client_id'] = self::$client_id;
@@ -118,6 +122,7 @@ class OpenSDK_Tencent_SNS2 extends OpenSDK_OAuth_Interface
         $params['response_type'] = $response_type;
         $params['state'] = $state;
         $params['display'] = $display;
+        $scope && $params['scope'] = $scope;
         return self::$authorizeURL . '?' . http_build_query($params);
     }
 

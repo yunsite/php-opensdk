@@ -33,8 +33,10 @@ else if(
     echo 'Access token: ' , OpenSDK_Tencent_SNS2::getParam (OpenSDK_Tencent_SNS2::ACCESS_TOKEN) , '<br />';
     echo 'Refresh token: ' , OpenSDK_Tencent_SNS2::getParam (OpenSDK_Tencent_SNS2::REFRESH_TOKEN) , '<br />';
     echo 'Expire in：' , OpenSDK_Tencent_SNS2::getParam(OpenSDK_Tencent_SNS2::EXPIRES_IN) , '<br />';
-    echo '你的微博帐号信息为:<br /><pre>';
+    echo '你的QQ帐号信息为:<br /><pre>';
     var_dump($uinfo);
+    echo '你的微博帐号信息为:<br /><pre>';
+    var_dump(OpenSDK_Tencent_SNS2::call('user/get_info',array(),'GET'));
     $exit = true;
 }
 else if( isset($_GET['code']))
@@ -47,8 +49,10 @@ else if( isset($_GET['code']))
         echo 'Access token: ' , OpenSDK_Tencent_SNS2::getParam (OpenSDK_Tencent_SNS2::ACCESS_TOKEN) , '<br />';
         echo 'Refresh token: ' , OpenSDK_Tencent_SNS2::getParam (OpenSDK_Tencent_SNS2::REFRESH_TOKEN) , '<br />';
         echo 'Expire in：' , OpenSDK_Tencent_SNS2::getParam(OpenSDK_Tencent_SNS2::EXPIRES_IN) , '<br />';
-        echo '你的微博帐号信息为:<br /><pre>';
+        echo '你的QQ帐号信息为:<br /><pre>';
         var_dump($uinfo);
+        echo '你的微博帐号信息为:<br /><pre>';
+        var_dump(OpenSDK_Tencent_SNS2::call('user/get_info',array(),'GET'));
     }
     else
     {
@@ -59,7 +63,7 @@ else if( isset($_GET['code']))
 else if(isset($_GET['go_oauth']))
 {
     $callback = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-    $url = OpenSDK_Tencent_SNS2::getAuthorizeURL($callback, 'code', 'state');
+    $url = OpenSDK_Tencent_SNS2::getAuthorizeURL($callback, 'code', 'state','default','get_other_info,get_info');
     header('Location: ' . $url);
 }
 else
