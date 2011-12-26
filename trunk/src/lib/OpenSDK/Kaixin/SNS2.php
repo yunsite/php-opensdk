@@ -98,17 +98,11 @@ class OpenSDK_Kaixin_SNS2 extends OpenSDK_OAuth_Interface
      * @param string $url 授权后的回调地址,站外应用需与回调地址一致,站内应用需要填写canvas page的地址
      * @param string $response_type 支持的值包括 code 和token 默认值为code
      * @param string $state 用于保持请求和回调的状态。在回调时,会在Query Parameter中回传该参数
-     * @param string $display 授权页面类型 登录和授权页面的展现样式，默认为“page” 可选范围:
-     *  - default       默认授权页面
-     *  - mobile        支持html5的手机
-     *  - popup         弹窗授权页
-     *  - wap1.2        wap1.2页面
-     *  - wap2.0        wap2.0页面
-     *  - js            js-sdk 专用 授权页面是弹窗，返回结果为js-sdk回掉函数
-     *  - apponweibo    站内应用专用,站内应用不传display参数,并且response_type为token时,默认使用改display.授权后不会返回access_token，只是输出js刷新站内应用父框架
+     * @param string $display 登录和授权页面的展现样式，默认为“page”
+     * @param string $scope 以空格分隔的权限列表，若不传递此参数，代表请求默认的basic权限。如需调用扩展权限，必需传递此参数，详细请参考权限列表 http://wiki.open.kaixin001.com/index.php?id=%E6%8E%A5%E5%8F%A3%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E8%AF%B4%E6%98%8E#权限列表
      * @return string
      */
-    public static function getAuthorizeURL($url,$response_type,$state,$display='default')
+    public static function getAuthorizeURL($url,$response_type,$state,$display='default',$scope='basic')
     {
         $params = array();
         $params['client_id'] = self::$client_id;
@@ -116,6 +110,7 @@ class OpenSDK_Kaixin_SNS2 extends OpenSDK_OAuth_Interface
         $params['response_type'] = $response_type;
         $params['state'] = $state;
         $params['display'] = $display;
+        $params['scope'] = $scope;
         return self::$authorizeURL . '?' . http_build_query($params);
     }
 
