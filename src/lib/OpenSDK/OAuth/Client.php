@@ -168,6 +168,7 @@ class OpenSDK_OAuth_Client
 
     protected function curl_http( $url , $params , $method='GET' , $multi=false , $extheaders=array())
     {
+        $method = strtoupper($method);
         $ci = curl_init();
         curl_setopt($ci, CURLOPT_USERAGENT, $this->_useragent);
         curl_setopt($ci, CURLOPT_CONNECTTIMEOUT, $this->connecttimeout);
