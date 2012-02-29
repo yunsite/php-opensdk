@@ -251,6 +251,13 @@ class OpenSDK_RenRen_SNS2 extends OpenSDK_OAuth_Interface
         return md5($str . self::$client_secret);
     }
 
+    protected static $_debug = false;
+
+    public static function debug($debug=false)
+    {
+        self::$_debug = $debug;
+    }
+
     /**
      * 获得OAuth2 对象
      * @return OpenSDK_OAuth2_Client
@@ -259,7 +266,7 @@ class OpenSDK_RenRen_SNS2 extends OpenSDK_OAuth_Interface
     {
         if( null === self::$oauth )
         {
-            self::$oauth = new OpenSDK_OAuth2_Client(false);
+            self::$oauth = new OpenSDK_OAuth2_Client(self::$_debug);
         }
         return self::$oauth;
     }

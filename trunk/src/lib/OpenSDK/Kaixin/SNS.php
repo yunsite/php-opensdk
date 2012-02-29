@@ -226,7 +226,14 @@ class OpenSDK_Kaixin_SNS extends OpenSDK_OAuth_Interface
     {
         self::$oauth = null;
     }
-    
+
+    protected static $_debug = false;
+
+    public static function debug($debug=false)
+    {
+        self::$_debug = $debug;
+    }
+
     /**
      * 获得OAuth 对象
      * @return OpenSDK_OAuth_Client
@@ -235,7 +242,7 @@ class OpenSDK_Kaixin_SNS extends OpenSDK_OAuth_Interface
     {
         if( null === self::$oauth )
         {
-            self::$oauth = new OpenSDK_OAuth_Client(self::$_appsecret);
+            self::$oauth = new OpenSDK_OAuth_Client(self::$_appsecret,self::$_debug);
             $secret = self::getParam(self::OAUTH_TOKEN_SECRET);
             if($secret)
             {
