@@ -328,10 +328,10 @@ class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
         $params['oauth_signature_method'] = 'HMAC-SHA1';
         $params['oauth_version'] = self::$version;
         $params['oauth_timestamp'] = self::getTimestamp();
-        if(!isset($params['clientip']))
-        {
-            $params['clientip'] = $_SERVER['REMOTE_ADDR'];
-        }
+//        if(!isset($params['clientip']))
+//        {
+//            $params['clientip'] = $_SERVER['REMOTE_ADDR'];
+//        }
         return self::getOAuth()->request($url, $method, $params, $multi);
     }
 }
