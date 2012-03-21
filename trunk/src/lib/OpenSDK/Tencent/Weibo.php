@@ -135,6 +135,41 @@ class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
     }
 
     /**
+     * 不影响当前会话OAuth授权的情况下，检验一对APPKEY and APPSecret是否正确
+     * @param string $appkey
+     * @param string $appsecret
+     * @return boolean
+     */
+    public static function checkAppKey($appkey,$appsecret)
+    {
+        if(self::$oauth)
+        {
+            $oldoauth = self::$oauth;
+        }
+        self::clearOauth();
+        self::init($appkey, $appsecret);
+        self::getOAuth()->setTokenSecret('');
+        $response = self::request( self::$requestTokenURL, 'GET' , array(
+            'oauth_callback' => 'null',
+        ));
+        parse_str($response , $rt);
+        $return = true;
+        if($rt['oauth_token'] && $rt['oauth_token_secret'])
+        {
+            $return = true;
+        }
+        else
+        {
+            $return = false;
+        }
+        if($oldoauth)
+        {
+            self::$oauth = $oldoauth;
+        }
+        return $return;
+    }
+
+    /**
      *
      * 获得授权URL
      *
