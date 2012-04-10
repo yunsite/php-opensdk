@@ -71,6 +71,7 @@ else if(isset($_GET['go_oauth']))
 {
 	$callback = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 	$request_token = OpenSDK_Sina_Weibo::getRequestToken($callback);
+        !$request_token && exit('获取request_token失败，请检查网络或者appkey和appsecret是否正确');
 	$url = OpenSDK_Sina_Weibo::getAuthorizeURL($request_token);
 	header('Location: ' . $url);
 }
