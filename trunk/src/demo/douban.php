@@ -59,6 +59,7 @@ else if(isset($_GET['go_oauth']))
 {
 	$callback = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 	$request_token = OpenSDK_Douban_Open::getRequestToken();
+        !$request_token && exit('获取request_token失败，请检查网络或者appkey和appsecret是否正确');
 	$url = OpenSDK_Douban_Open::getAuthorizeURL($request_token,$callback);
 	header('Location: ' . $url);
 }
