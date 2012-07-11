@@ -20,6 +20,7 @@ copy appkey.php "demo/tencentsnsappkey.php"
 copy appkey.php "demo/renrenappkey.php"
 copy appkey.php "demo/baiduappkey.php"
 copy appkey.php "demo/doubanappkey.php"
+copy appkey.php "demo/taobaoappkey.php"
 
 
 ECHO 文件导出成功...
