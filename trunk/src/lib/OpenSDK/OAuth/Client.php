@@ -144,7 +144,7 @@ class OpenSDK_OAuth_Client
      * @param false|array $multi false:普通post array: array ( '{fieldname}'=>'/path/to/file' ) 文件上传
      * @return string
      */
-    protected function http( $url , $params , $method='GET' , $multi=false , $extheaders=array())
+    public function http( $url , $params , $method='GET' , $multi=false , $extheaders=array())
     {
         if(function_exists('curl_init'))
         {

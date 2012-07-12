@@ -274,4 +274,17 @@ class OpenSDK_163_Weibo extends OpenSDK_OAuth_Interface
         return self::getOAuth()->request($url, $method, $params, $multi);
     }
 
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function  getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+            self::OAUTH_TOKEN => self::getParam(self::OAUTH_TOKEN),
+            self::OAUTH_TOKEN_SECRET => self::getParam(self::OAUTH_TOKEN_SECRET),
+        );
+    }
+
 }

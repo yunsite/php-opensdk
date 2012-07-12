@@ -95,6 +95,10 @@ class OpenSDK_RenRen_SNS2 extends OpenSDK_OAuth_Interface
     const OAUTH_USER_ID = 'renren_user_id';
 
     /**
+     * 获取授权时间
+     */
+    const OAUTH_TIME = 'renren_oauth_time';
+    /**
      * authorize接口
      *
      * @param string $url 授权后的回调地址,站外应用需与回调地址一致,站内应用需要填写canvas page的地址
@@ -160,6 +164,7 @@ class OpenSDK_RenRen_SNS2 extends OpenSDK_OAuth_Interface
             self::setParam(self::REFRESH_TOKEN, $token['refresh_token']);
             self::setParam(self::EXPIRES_IN, $token['expires_in']);
             self::setParam(self::OAUTH_USER_ID, $token['user']['id']);
+            self::setParam(self::OAUTH_TIME, self::getTimestamp());
         }
         else
         {
@@ -289,6 +294,21 @@ class OpenSDK_RenRen_SNS2 extends OpenSDK_OAuth_Interface
             exit('app key or app secret not init');
         }
         return self::getOAuth()->request($url, $method, $params, $multi);
+    }
+
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function  getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+            self::OAUTH_TIME => self::getParam(self::OAUTH_TIME),
+            self::OAUTH_USER_ID => self::getParam(self::OAUTH_USER_ID),
+            self::EXPIRES_IN => self::getParam(self::EXPIRES_IN),
+            self::REFRESH_TOKEN => self::getParam(self::REFRESH_TOKEN),
+        );
     }
 
 }

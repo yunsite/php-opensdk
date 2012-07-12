@@ -98,6 +98,11 @@ class OpenSDK_Baidu_Open extends OpenSDK_OAuth_Interface
     const SESSION_SECRET = 'baidu_session_secret';
 
     /**
+     * 获取授权时间
+     */
+    const OAUTH_TIME = 'baidu_oauth_time';
+
+    /**
      * authorize接口
      *
      * @param string $url 授权后的回调地址,站外应用需与回调地址一致,站内应用需要填写canvas page的地址
@@ -165,6 +170,7 @@ class OpenSDK_Baidu_Open extends OpenSDK_OAuth_Interface
             self::setParam(self::SCOPE, $token['scope']);
             self::setParam(self::SESSION_KEY, $token['session_key']);
             self::setParam(self::SESSION_SECRET, $token['session_secret']);
+            self::setParam(self::OAUTH_TIME, self::getTimestamp());
         }
         else
         {
@@ -295,6 +301,23 @@ class OpenSDK_Baidu_Open extends OpenSDK_OAuth_Interface
             exit('app key or app secret not init');
         }
         return self::getOAuth()->request($url, $method, $params, $multi);
+    }
+
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function  getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+            self::OAUTH_TIME => self::getParam(self::OAUTH_TIME),
+            self::SCOPE => self::getParam(self::SCOPE),
+            self::EXPIRES_IN => self::getParam(self::EXPIRES_IN),
+            self::REFRESH_TOKEN => self::getParam(self::REFRESH_TOKEN),
+            self::SESSION_KEY => self::getParam(self::SESSION_KEY),
+            self::SESSION_SECRET => self::getParam(self::SESSION_SECRET),
+        );
     }
 
 }

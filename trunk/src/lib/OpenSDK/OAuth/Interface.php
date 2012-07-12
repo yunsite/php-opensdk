@@ -41,6 +41,16 @@ class OpenSDK_OAuth_Interface
         self::$timestampFunc = $func;
     }
 
+    /**
+     * 用于存储当前进程参数的变量
+     * @var array
+     */
+    protected static $params = array();
+
+    /**
+     * 获取session级别的参数方法，若不是callback类型，则从$_SESSION中获取
+     * @var callback
+     */
     protected static $getParamFunc = null;
 
     /**
@@ -53,6 +63,10 @@ class OpenSDK_OAuth_Interface
      */
     public static function getParam( $key )
     {
+        if(is_set(self::$params[$key]))
+        {
+            return self::$params[$key];
+        }
         if(null !== self::$getParamFunc && is_callable(self::$getParamFunc))
         {
             return call_user_func(self::$getParamFunc, $key);
@@ -78,6 +92,10 @@ class OpenSDK_OAuth_Interface
         self::$setParamFunc = $set;
     }
 
+    /**
+     * 设置session级别参数的方法，若不是callback则使用$_SESSION
+     * @var array
+     */
     protected static $setParamFunc = null;
 
     /**
@@ -91,6 +109,14 @@ class OpenSDK_OAuth_Interface
      */
     public static function setParam( $key , $val=null)
     {
+        if( null === $val)
+        {
+            unset(self::$params[$key]);
+        }
+        else
+        {
+            self::$params[$key] = $val;
+        }
         if(null !== self::$setParamFunc && is_callable(self::$setParamFunc))
         {
             return call_user_func(self::$setParamFunc, $key, $val);
