@@ -63,7 +63,7 @@ class OpenSDK_OAuth_Interface
      */
     public static function getParam( $key )
     {
-        if(is_set(self::$params[$key]))
+        if(isset(self::$params[$key]))
         {
             return self::$params[$key];
         }

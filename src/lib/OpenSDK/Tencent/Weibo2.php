@@ -58,7 +58,7 @@ class OpenSDK_Tencent_Weibo2 extends OpenSDK_OAuth_Interface
 
     /**
      * OAuth 对象
-     * @var OpenSDK_OAuth_Client
+     * @var OpenSDK_OAuth2_Client
      */
     private static $oauth = null;
 
