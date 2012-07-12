@@ -93,6 +93,11 @@ class OpenSDK_Kaixin_SNS2 extends OpenSDK_OAuth_Interface
     const SCOPE = 'kx2_scope';
 
     /**
+     * 获取授权时间
+     */
+    const OAUTH_TIME = 'kx2_oauth_time';
+
+    /**
      * authorize接口
      *
      * @param string $url 授权后的回调地址,站外应用需与回调地址一致,站内应用需要填写canvas page的地址
@@ -154,6 +159,7 @@ class OpenSDK_Kaixin_SNS2 extends OpenSDK_OAuth_Interface
             self::setParam(self::REFRESH_TOKEN, $token['refresh_token']);
             self::setParam(self::EXPIRES_IN, $token['expires_in']);
             self::setParam(self::SCOPE, $token['scope']);
+            self::setParam(self::OAUTH_TIME, self::getTimestamp());
         }
         else
         {
@@ -262,4 +268,19 @@ class OpenSDK_Kaixin_SNS2 extends OpenSDK_OAuth_Interface
         return self::getOAuth()->request($url, $method, $params, $multi);
     }
 
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function  getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+            self::OAUTH_TIME => self::getParam(self::OAUTH_TIME),
+            self::SCOPE => self::getParam(self::SCOPE),
+            self::EXPIRES_IN => self::getParam(self::EXPIRES_IN),
+            self::REFRESH_TOKEN => self::getParam(self::REFRESH_TOKEN),
+        );
+    }
+    
 }

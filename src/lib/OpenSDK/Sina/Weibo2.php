@@ -88,6 +88,11 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
     const EXPIRES_IN = 'sina2_expires_in';
 
     /**
+     * 获取授权时间
+     */
+    const OAUTH_TIME = 'sina2_oauth_time';
+
+    /**
      * authorize接口
      *
      * 对应API：{@link http://open.weibo.com/wiki/Oauth2/authorize Oauth2/authorize}
@@ -161,6 +166,7 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
             self::setParam(self::REFRESH_TOKEN, $token['refresh_token']);
             self::setParam(self::EXPIRES_IN, $token['expires_in']);
             self::setParam(self::OAUTH_USER_ID, $token['uid']);
+            self::setParam(self::OAUTH_TIME, self::getTimestamp());
         } 
         else
         {
@@ -272,4 +278,18 @@ class OpenSDK_Sina_Weibo2 extends OpenSDK_OAuth_Interface
         return self::getOAuth()->request($url, $method, $params, $multi ,$headers);
     }
 
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function  getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+            self::OAUTH_TIME => self::getParam(self::OAUTH_TIME),
+            self::OAUTH_USER_ID => self::getParam(self::OAUTH_USER_ID),
+            self::EXPIRES_IN => self::getParam(self::EXPIRES_IN),
+            self::REFRESH_TOKEN => self::getParam(self::REFRESH_TOKEN),
+        );
+    }
 }

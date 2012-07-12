@@ -11,6 +11,7 @@ require_once 'OpenSDK/Tencent/Weibo.php';
 
 include 'tencentappkey.php';
 
+//OpenSDK_Tencent_Weibo::debug(true);
 OpenSDK_Tencent_Weibo::init($appkey, $appsecret);
 
 //打开session
@@ -33,23 +34,25 @@ else if( OpenSDK_Tencent_Weibo::getParam (OpenSDK_Tencent_Weibo::ACCESS_TOKEN) &
 	echo '你已经获得授权。你的授权信息:<br />';
 	echo 'Access token: ' , OpenSDK_Tencent_Weibo::getParam(OpenSDK_Tencent_Weibo::ACCESS_TOKEN) , '<br />';
 	echo 'oauth_token_secret: ' , OpenSDK_Tencent_Weibo::getParam(OpenSDK_Tencent_Weibo::OAUTH_TOKEN_SECRET) , '<br />';
+        echo 'OpenID: ' , OpenSDK_Tencent_Weibo::getParam(OpenSDK_Tencent_Weibo::OAUTH_OPENID) , '<br />';
+        echo 'OpenKey: ' , OpenSDK_Tencent_Weibo::getParam(OpenSDK_Tencent_Weibo::OAUTH_OPENKEY) , '<br />';
 	echo '你的微博帐号信息为:<br /><pre>';
 	var_dump($uinfo);
 	/**
 	 * 上传一张图片并发一条微博
 	 */
-	var_dump(
-
-            OpenSDK_Tencent_Weibo::call(
-                't/add_pic',
-                array(
-                    'content' => 'test pic' . time(),
-                    'clientip' => '123.119.32.253',
-                ),
-                'POST',
-                array('pic' => dirname(__FILE__) . '/0.jpg',)
-            )
-    );
+//	var_dump(
+//
+//            OpenSDK_Tencent_Weibo::call(
+//                't/add_pic',
+//                array(
+//                    'content' => 'test pic' . time(),
+//                    'clientip' => '123.119.32.253',
+//                ),
+//                'POST',
+//                array('pic' => dirname(__FILE__) . '/0.jpg',)
+//            )
+//        );
 	$exit = true;
 }
 else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
@@ -61,7 +64,9 @@ else if( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
 		echo '从Opent返回并获得授权。你的微博帐号信息为：<br />';
 		echo 'Access token: ' , OpenSDK_Tencent_Weibo::getParam(OpenSDK_Tencent_Weibo::ACCESS_TOKEN) , '<br />';
 		echo 'oauth_token_secret: ' , OpenSDK_Tencent_Weibo::getParam(OpenSDK_Tencent_Weibo::OAUTH_TOKEN_SECRET) , '<br />';
-		echo '你的微博帐号信息为:<br /><pre>';
+		echo 'OpenID: ' , OpenSDK_Tencent_Weibo::getParam(OpenSDK_Tencent_Weibo::OAUTH_OPENID) , '<br />';
+                echo 'OpenKey: ' , OpenSDK_Tencent_Weibo::getParam(OpenSDK_Tencent_Weibo::OAUTH_OPENKEY) , '<br />';
+                echo '你的微博帐号信息为:<br /><pre>';
 		var_dump($uinfo);
 	}
 	else

@@ -21,7 +21,7 @@ require_once 'OpenSDK/OAuth/Interface.php';
  * 4、OpenSDK_Douban_Open::getRequestToken($callback); 获得request token
  * 5、OpenSDK_Douban_Open::getAuthorizeURL($token); 获得跳转授权URL
  * 6、OpenSDK_Douban_Open::getAccessToken($oauth_verifier) 获得access token
- * 7、OpenSDK_Douban_Open::call();调用API接口
+ * 7、OpenSDK_Douban_Open::call();调用API接口 豆瓣的调用方式跟一般API不一样，这个SDK可能不起作用
  *
  * 建议：
  * 1、PHP5.2 以下版本，可以使用Pear库中的 Service_JSON 来兼容json_decode

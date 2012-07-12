@@ -134,7 +134,7 @@ class OpenSDK_Taobao_Open extends OpenSDK_OAuth_Interface
         $token = OpenSDK_Util::json_decode($response, true);
         if ( is_array($token) && !isset($token['error']) ) 
         {
-            self::setParam(self::OAUTH_TIME, time());
+            self::setParam(self::OAUTH_TIME, self::getTimestamp());
             self::setParam(self::ACCESS_TOKEN, $token['access_token']);
             self::setParam(self::EXPIRES_IN, $token['expires_in']);
             self::setParam(self::REFRESH_TOKEN, $token['refresh_token']);

@@ -244,16 +244,45 @@ class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
         else
             $format == self::RETURN_JSON;
         $params['format'] = $format;
-        //去掉空数据
-        foreach($params as $key => $val)
+        $oauth_token = self::getParam(self::ACCESS_TOKEN);
+        //使用OAuth鉴权
+        if($oauth_token)
         {
-            if(strlen($val) == 0)
+            //去掉空数据
+            foreach($params as $key => $val)
             {
-                unset($params[$key]);
+                if(strlen($val) == 0)
+                {
+                    unset($params[$key]);
+                }
             }
+            $params['oauth_token'] = $oauth_token;
+            $response = self::request( 'http://open.t.qq.com/api/'.ltrim($command,'/') , $method, $params, $multi);
         }
-        $params['oauth_token'] = self::getParam(self::ACCESS_TOKEN);
-        $response = self::request( 'http://open.t.qq.com/api/'.ltrim($command,'/') , $method, $params, $multi);
+        //使用OpenID & OpenKey鉴权
+        else
+        {
+            $params['appid'] = self::$_appkey;
+            $params['openid'] = self::getParam(self::OAUTH_OPENID);
+            $params['openkey'] = self::getParam(self::OAUTH_OPENKEY);
+            $params['reqtime'] = self::getTimestamp();
+            $params['wbversion'] = 1;
+            $params['pf'] = 'tapp';
+            ksort($params);
+            $signarr = array();
+            foreach($params as $key => $val)
+            {
+                if(strlen($val) == 0)
+                {
+                    unset($params[$key]);
+                    continue;
+                }
+                $signarr[] = "$key=$val";
+            }
+            $signstr = strtoupper($method) . '&' . rawurlencode( '/api/'.ltrim($command,'/') ) . '&' . rawurlencode(implode('&', $signarr));
+            $params['sig'] = base64_encode(OpenSDK_Util::hash_hmac('sha1', $signstr, self::$_appsecret . '&', true));
+            $response = self::getOAuth()->http('http://open.t.qq.com/api/'.ltrim($command,'/'), $params, $method, $multi);
+        }
         if($decode)
         {
             if($format == self::RETURN_JSON)
@@ -334,4 +363,21 @@ class OpenSDK_Tencent_Weibo extends OpenSDK_OAuth_Interface
 //        }
         return self::getOAuth()->request($url, $method, $params, $multi);
     }
+
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+            self::OAUTH_NAME => self::getParam(self::OAUTH_NAME),
+            self::OAUTH_OPENID => self::getParam(self::OAUTH_OPENID),
+            self::OAUTH_OPENKEY => self::getParam(self::OAUTH_OPENKEY),
+            self::OAUTH_TOKEN => self::getParam(self::OAUTH_TOKEN),
+            self::OAUTH_TOKEN_SECRET => self::getParam(self::OAUTH_TOKEN_SECRET),
+        );
+    }
+
 }

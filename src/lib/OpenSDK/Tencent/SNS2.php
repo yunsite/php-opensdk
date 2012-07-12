@@ -300,4 +300,20 @@ class OpenSDK_Tencent_SNS2 extends OpenSDK_OAuth_Interface
         return self::getOAuth()->request($url, $method, $params, $multi);
     }
 
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function  getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+            self::OAUTH_NAME => self::getParam(self::OAUTH_NAME),
+//            self::EXPIRES_IN => self::getParam(self::EXPIRES_IN),
+//            self::REFRESH_TOKEN => self::getParam(self::REFRESH_TOKEN),
+            self::OAUTH_OPENID => self::getParam(self::OAUTH_OPENID),
+            self::OAUTH_OPENKEY => self::getParam(self::OAUTH_OPENKEY),
+        );
+    }
+
 }

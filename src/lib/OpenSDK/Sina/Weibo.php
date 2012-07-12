@@ -291,4 +291,19 @@ class OpenSDK_Sina_Weibo extends OpenSDK_OAuth_Interface
         return self::getOAuth()->request($url, $method, $params, $multi,$extheaders);
     }
 
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function  getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+            self::OAUTH_TOKEN => self::getParam(self::OAUTH_TOKEN),
+            self::OAUTH_TOKEN_SECRET => self::getParam(self::OAUTH_TOKEN_SECRET),
+            self::OAUTH_USER_ID => self::getParam(self::OAUTH_USER_ID),
+            self::OAUTH_SCREEN_NAME => self::getParam(self::OAUTH_SCREEN_NAME),
+        );
+    }
+    
 }

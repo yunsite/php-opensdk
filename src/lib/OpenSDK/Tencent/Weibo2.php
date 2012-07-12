@@ -127,6 +127,10 @@ class OpenSDK_Tencent_Weibo2 extends OpenSDK_OAuth_Interface
     const OAUTH_NAME = 'tencent_oauth_name';
 
     /**
+     * 获取授权时间
+     */
+    const OAUTH_TIME = 'tencent_oauth_time';
+    /**
      * access_token接口
      *
      * 对应API：{@link http://wiki.open.t.qq.com/index.php/OAuth2.0%E9%89%B4%E6%9D%83#.E7.AC.AC.E4.BA.8C.E6.AD.A5.EF.BC.9A.E8.AF.B7.E6.B1.82accesstoken}
@@ -171,10 +175,11 @@ class OpenSDK_Tencent_Weibo2 extends OpenSDK_OAuth_Interface
         }
 
         self::setParam(self::ACCESS_TOKEN, $token['access_token']);
-        //self::setParam(self::REFRESH_TOKEN, $token['refresh_token']);
         //刷新token（目前暂不返回）
-        self::setParam(self::EXPIRES_IN, $token['expires_in']);
+        //self::setParam(self::REFRESH_TOKEN, $token['refresh_token']);        
+//        self::setParam(self::EXPIRES_IN, $token['expires_in']);
         self::setParam(self::OAUTH_NAME, $token['name']);
+//        self::setParam(self::OAUTH_TIME, time());
 
         return $token;
     }
@@ -292,5 +297,22 @@ class OpenSDK_Tencent_Weibo2 extends OpenSDK_OAuth_Interface
             exit('app key or app secret not init');
         }
         return self::getOAuth()->request($url, $method, $params, $multi);
+    }
+
+    /**
+     * 获取所有会话参数
+     * @return array
+     */
+    public static function  getParams()
+    {
+        return array(
+            self::ACCESS_TOKEN => self::getParam(self::ACCESS_TOKEN),
+//            self::OAUTH_TIME => self::getParam(self::OAUTH_TIME),
+            self::OAUTH_NAME => self::getParam(self::OAUTH_NAME),
+//            self::EXPIRES_IN => self::getParam(self::EXPIRES_IN),
+//            self::REFRESH_TOKEN => self::getParam(self::REFRESH_TOKEN),
+            self::OAUTH_OPENID => self::getParam(self::OAUTH_OPENID),
+            self::OAUTH_OPENKEY => self::getParam(self::OAUTH_OPENKEY),
+        );
     }
 }
